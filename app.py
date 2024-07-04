@@ -1,13 +1,25 @@
 from flask import Flask, render_template, url_for, request
 from flask_cors import CORS
 import random
+from datetime import datetime
 app = Flask(__name__)
 
 # DB 기본 코드
 import os
 from flask_sqlalchemy import SQLAlchemy
+basedir = os.path.abspath(os.path.dirname(__file__))
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] =\
+        'sqlite:///' + os.path.join(basedir, 'database.db')
 
+db = SQLAlchemy(app)
 
+class Users(db.Model):
+    idx = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(100), nullable=False)
+    user_name = db.Column(db.String(100), nullable=False)
+    user_pw = db.Column(db.String(100), nullable=False)
+    join_date = db.Column(db.DateTime,default=datetime.now(), onupdate=datetime.now())
 
 @app.route('/')
 def games():
@@ -27,10 +39,18 @@ def user_create():
     ruser_id = params['user_id']
     ruser_pw =  params['user_pw']
     ruser_name =  params['user_name']
+    filter_list = Users.query.filter_by(user_id=ruser_id).all()
 
-    print(ruser_id,ruser_pw,ruser_name)
+    move_url = ''
+    if filter_list:
+        move_url = 'sign.html'
+    else:
+        user = Users(user_id=ruser_id, user_name = ruser_name, user_pw = ruser_pw)
+        db.session.add(user)
+        db.session.commit()
+        move_url = 'login.html'
 
-    return render_template('login.html')
+    return render_template(move_url)
 
 @app.route('/game/winlose')
 def game_winlose():
@@ -55,9 +75,6 @@ def game_winlose():
             reuslt = "사용자 승리!!"
 
     return {'computer' : rps[choice], 'reuslt': reuslt}
-
-
-
 
 if __name__ == '__main__':
     app.run()
