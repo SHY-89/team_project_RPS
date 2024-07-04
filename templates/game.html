@@ -1,28 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>RPS Game</title>
     <script src="{{ url_for('static', filename='js/jquery-latest.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sweetalert2.min.css') }}">
+    <script src="{{ url_for('static', filename='js/sweetalert2.min.js') }}"></script>
     <style>
-        h1{ text-align: center; }
-        .player_game_body{ display: flex; justify-content: space-around; }
-        .player_img{ width: 50px; height: 50px; cursor: pointer; }
+        h1 {
+            text-align: center;
+        }
+
+        .player_game_body {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .player_img {
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+        }
     </style>
 </head>
+
 <body>
     <h1> 1조 퍼스트 코딩 : RPS WEB GAME </h1>
     <div class="player_game_body">
-        <img class="player_img player_img1" src="{{ url_for('static', filename='images/hand-scissors-solid.svg') }}" alt="가위">
-        <img class="player_img player_img2" src="{{ url_for('static', filename='images/hand-back-fist-solid.svg') }}" alt="바위">
+        <img class="player_img player_img1" src="{{ url_for('static', filename='images/hand-scissors-solid.svg') }}"
+            alt="가위">
+        <img class="player_img player_img2" src="{{ url_for('static', filename='images/hand-back-fist-solid.svg') }}"
+            alt="바위">
         <img class="player_img player_img3" src="{{ url_for('static', filename='images/hand-solid.svg') }}" alt="보">
     </div>
     <script>
-        $(function(){
-            $('.player_img').click(function(){
-                alert(111)
+        $(function () {
+            $('.player_img').click(function () {
+                const choise = $(this).attr("class").split('player_img')[2]
+                let print_choise = ''
+                switch (choise) {
+                    case '1':
+                        print_choise = '찌'
+                        break;
+                    case '2':
+                        print_choise = '묵'
+                        break;
+                    case '3':
+                        print_choise = '빠'
+                        break;
+                }
+                Swal.fire({
+                    title: print_choise+"로 승부 하시겠 습니까?",
+                    showCancelButton: true,
+                }).then((result) => {
+                    /* Read more about isConfirmed, isDenied below */
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '"{{ url_for(game_winlose) }}',
+                            method: 'post',
+                            data : form,
+                            dataType : 'html',
+                            success: function (data, status, xhr) {
+                                console.log("data : : " + JSON.stringify(data));
+                                $("#search_result").empty();
+                                $("#search_result").replaceWith(data);
+                            }
+                        })
+
+                    }
+                });
             })
         })
     </script>
 </body>
+
 </html>
