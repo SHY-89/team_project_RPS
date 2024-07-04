@@ -24,10 +24,15 @@
                 <label for="floatingPassword">Password</label>
             </div>
             <button class="btn btn-primary w-100 py-2 mb-3" type="submit">Login</button>
-            <button class="btn btn-info w-100 py-2" type="submit">Sign</button>
+            <button class="btn btn-info w-100 py-2" type="button" onclick="moves()">Sign</button>
             <p class="mt-5 mb-3 text-body-secondary">© 1조 퍼스트 코딩 2024.07.04</p>
         </form>
     </main>
+    <script>
+        function moves(){
+            location.href = "{{ url_for('sign') }}"
+        }
+    </script>
 </body>
 
 </html>

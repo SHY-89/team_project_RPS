@@ -11,7 +11,7 @@ def games():
 def login():
     return render_template('login.html')
 
-@app.route('/login')
+@app.route('/sign')
 def sign():
     return render_template('sign.html')
 
