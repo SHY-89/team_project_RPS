@@ -1,10 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
 
+            /* display: flex;
+            flex-direction: column; */
+        }
+    </style>
+</head>
+
+<body>
+    <h1>가위바위보게임</h1>
+    <form method="POST">
+        <button type="submit" name="player_choice" value="가위">가위</button>
+        <button type="submit" name="player_choice" value="바위">바위</button>
+        <button type="submit" name="player_choice" value="보">보</button>
+    </form>
+    <p>{{data.player_choice}}</p>
+    <p>{{data.computer_choice}}</p>
+    <h2>{{data.game_win_lose}}</h2>
+    <div>
+        <li>승 : {{data.win_count}}</li>
+        <li>무승부 : {{data.draw_count}}</li>
+        <li>패 : {{data.lose_count}}</li>
+    </div>
 </body>
+
 </html>
