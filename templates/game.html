@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>RPS Game</title>
-    <script src="/static/js/jquery-latest.min.js"></script>
+    <script src="{{ url_for('static', filename='js/jquery-latest.min.js') }}"></script>
 </head>
 <body>
     <div>
-        <img src="" alt="가위">
-        <img src="" alt="바위">
-        <img src="" alt="보">
+        <img src="{{ url_for('static', filename='js/images/hand-scissors-solid.svg') }}" alt="가위">
+        <img src="{{ url_for('static', filename='images/hand-back-fist-solid.svg') }}" alt="바위">
+        <img src="{{ url_for('static', filename='images/hand-solid.svg') }}" alt="보">
     </div>
     <script>
 
