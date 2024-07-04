@@ -33,6 +33,17 @@ def login():
 def sign():
     return render_template('sign.html')
 
+
+@app.route('/check/user')
+def check_user():
+    ruser_id =  request.args.get("user_id")
+    filter_list = Users.query.filter_by(user_id=ruser_id).all()
+    result = 'sussece'
+    if filter_list:
+        result = 'fail'
+    return {'reuslt': result}
+
+
 @app.route('/user/create', methods=['POST'])
 def user_create():
     params = request.form
@@ -41,16 +52,15 @@ def user_create():
     ruser_name =  params['user_name']
     filter_list = Users.query.filter_by(user_id=ruser_id).all()
 
-    move_url = ''
+    result = 'sussece'
     if filter_list:
-        move_url = 'sign.html'
+        result = 'fail'
     else:
         user = Users(user_id=ruser_id, user_name = ruser_name, user_pw = ruser_pw)
         db.session.add(user)
         db.session.commit()
-        move_url = 'login.html'
 
-    return render_template(move_url)
+    return {'reuslt': result}
 
 @app.route('/game/winlose')
 def game_winlose():
