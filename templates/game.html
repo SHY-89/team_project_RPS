@@ -57,14 +57,12 @@
                     /* Read more about isConfirmed, isDenied below */
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: '"{{ url_for(game_winlose) }}',
-                            method: 'post',
-                            data : form,
-                            dataType : 'html',
+                            url: `{{ url_for('game_winlose') }}`,
+                            method: 'GET',
+                            data : {'user_choise' : choise},
+                            dataType : 'json',
                             success: function (data, status, xhr) {
-                                console.log("data : : " + JSON.stringify(data));
-                                $("#search_result").empty();
-                                $("#search_result").replaceWith(data);
+                                
                             }
                         })
 
