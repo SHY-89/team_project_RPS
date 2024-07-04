@@ -30,8 +30,11 @@
 		회원정보(users)
 			idx int primary key 고유 키
 			uname varchar not null 유저 이름
+			-> user_name 명칭 수정
 			email varchar not null 유저 아이디(이메일)
+			-> user_id 명칭 수정
 			pw varchar not null 유저 패스워드 보안
+			-> user_pw 명칭 수정
 		게임기록(game_log)
 			idx int primary key 고유 키
 			round int not null 유저의 게임 횟수
@@ -51,3 +54,8 @@
 	random
 
 개발사항
+
+	회원 가입 페이지 	개발완료
+	로그인 페이지		프론트 완료, 백단 작업 대기
+	게임 페이지			프론트 완료, 게임 동작 완료, 데이터베이스 생성 및 입출력 작업 대기
+	전적 페이지			게임 페이지 노출, 데이베이스 연결 및 출력 작업 대기
