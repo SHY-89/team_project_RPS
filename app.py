@@ -7,6 +7,10 @@ app = Flask(__name__)
 def games():
     return render_template('game.html')
 
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
 @app.route('/game/winlose')
 def game_winlose():
 
