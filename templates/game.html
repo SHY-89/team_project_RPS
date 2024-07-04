@@ -22,6 +22,20 @@
             height: 50px;
             cursor: pointer;
         }
+        .game_result_body table{
+            width: 100%;
+            text-align: center;
+        }
+        .game_result_body thead tr{
+            background-color: #000;
+            color: #fff;
+        }
+        .game_result_body tbody tr:nth-child(odd){
+            background-color: #f9bdbd;
+        }
+        .game_result_body tbody tr:nth-child(even){
+            background-color: #c3c3c3;
+        }
     </style>
 </head>
 
@@ -34,20 +48,44 @@
             alt="바위">
         <img class="player_img player_img3" src="{{ url_for('static', filename='images/hand-solid.svg') }}" alt="보">
     </div>
+    <br>
+    <hr>
+    <h1> 전적 </h1>
+    <div class="game_result_body">
+        <table>
+            <colgroup>
+                <col width="5%">
+                <col width="*">
+                <col width="*">
+                <col width="10%">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>순번</th>
+                    <th>플레이어</th>
+                    <th>컴퓨터</th>
+                    <th>결과</th>
+                </tr>
+            </thead>
+            <tbody class="game_results">
+            </tbody>
+        </table>
+    </div>
     <script>
+        let nums = 1
         $(function () {
             $('.player_img').click(function () {
                 const choise = $(this).attr("class").split('player_img')[2]
                 let print_choise = ''
                 switch (choise) {
                     case '1':
-                        print_choise = '찌'
+                        print_choise = '가위'
                         break;
                     case '2':
-                        print_choise = '묵'
+                        print_choise = '바위'
                         break;
                     case '3':
-                        print_choise = '빠'
+                        print_choise = '보'
                         break;
                 }
                 Swal.fire({
@@ -62,7 +100,15 @@
                             data : {'user_choise' : choise},
                             dataType : 'json',
                             success: function (data) {
-                                console.log(data)
+                                let add_html = `<tr>
+                                    <td>`+nums+`</td>
+                                    <td>`+print_choise+`</td>
+                                    <td>`+data.computer+`</td>
+                                    <td>`+data.reuslt+`</td>
+                                    </tr>
+                                    `
+                                $('.game_results').prepend(add_html)
+                                nums++
                             }
                         })
 
