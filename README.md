@@ -41,10 +41,13 @@
 
 개발환경 & 사용기술
 
-	Python 3.8.6
-	random
-	flask
+	Python 				3.8.6
+	flask				3.0.3
+	jquery 				1.11.1
+	sweetalert 			2.1.2
+	Flask-Cors         	4.0.1
 	flask-sqlalchemy
 	hashlib
+	random
 
 개발사항
