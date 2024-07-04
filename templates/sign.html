@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPS Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sign-in.css') }}">
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+</head>
+
+<body class="d-flex align-items-center py-4 bg-body-tertiary">
+    <main class="form-signin w-100 m-auto">
+        <form>
+            <h1 class="h3 mb-3 fw-normal">로그인</h1>
+
+            <div class="form-floating">
+                <input type="text" class="form-control" id="floatingInput" placeholder="userId" name="user_id">
+                <label for="floatingInput">Id</label>
+            </div>
+            <div class="form-floating">
+                <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="user_pw">
+                <label for="floatingPassword">Password</label>
+            </div>
+            <button class="btn btn-primary w-100 py-2 mb-3" type="submit">Login</button>
+            <button class="btn btn-info w-100 py-2" onclick="javascript:location.href='{{ url_for(sign) }}'">Sign</button>
+            <p class="mt-5 mb-3 text-body-secondary">© 1조 퍼스트 코딩 2024.07.04</p>
+        </form>
+    </main>
+</body>
+
+</html>
