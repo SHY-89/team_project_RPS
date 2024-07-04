@@ -3,6 +3,12 @@ from flask_cors import CORS
 import random
 app = Flask(__name__)
 
+# DB 기본 코드
+import os
+from flask_sqlalchemy import SQLAlchemy
+
+
+
 @app.route('/')
 def games():
     return render_template('game.html')
@@ -14,6 +20,17 @@ def login():
 @app.route('/sign')
 def sign():
     return render_template('sign.html')
+
+@app.route('/user/create', methods=['POST'])
+def user_create():
+    params = request.form
+    ruser_id = params['user_id']
+    ruser_pw =  params['user_pw']
+    ruser_name =  params['user_name']
+
+    print(ruser_id,ruser_pw,ruser_name)
+
+    return render_template('login.html')
 
 @app.route('/game/winlose')
 def game_winlose():
@@ -38,6 +55,8 @@ def game_winlose():
             reuslt = "사용자 승리!!"
 
     return {'computer' : rps[choice], 'reuslt': reuslt}
+
+
 
 
 if __name__ == '__main__':

@@ -46,7 +46,7 @@
 	jquery 				1.11.1
 	sweetalert 			2.1.2
 	Flask-Cors         	4.0.1
-	flask-sqlalchemy
+	flask-sqlalchemy	3.1.1
 	hashlib
 	random
 
