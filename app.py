@@ -35,6 +35,34 @@ class GameLog(db.Model):
         db.DateTime, default=datetime.now(), onupdate=datetime.now())
 
 
+def rank_list():
+    select_game = {}
+    for total_data in GameLog.query.filter(GameLog.result.like('%!!')).all():
+        if total_data.user_id not in select_game:
+            select_game[total_data.user_id] = {}
+            select_game[total_data.user_id]['user_id'] = total_data.user_id
+            select_game[total_data.user_id]['win'] = 0
+            select_game[total_data.user_id]['lose'] = 0
+            select_game[total_data.user_id]['total'] = 0
+            select_game[total_data.user_id]['avg'] = 0
+        
+        if total_data.result == '사용자 승리!!':
+            select_game[total_data.user_id]['win'] += 1
+        else:
+            select_game[total_data.user_id]['lose'] += 1
+
+        select_game[total_data.user_id]['total'] += 1
+        select_game[total_data.user_id]['avg'] = int((select_game[total_data.user_id]['win'] / select_game[total_data.user_id]['total']) * 100)
+    
+    sorted_data = dict(sorted(select_game.items(), key=lambda item: item[1]['avg'], reverse=True))
+    custom_data = []
+    i = 1
+    for key,append_data in sorted_data.items():
+        if i == 6 : break
+        custom_data.append(append_data)
+        i += 1
+    return custom_data
+
 @app.route('/')
 def games():
     return_url = ''
@@ -45,25 +73,9 @@ def games():
         select_game = GameLog.query.filter_by(user_id=suser_id).order_by(GameLog.idx.desc()).all()
         data = [ {'player':gamedata.player,'computer':gamedata.computer, 'result':gamedata.result} for gamedata in select_game]
 
-        select_game = {}
-        for total_data in GameLog.query.filter(GameLog.result.like('%!!')).all():
-            if total_data.user_id not in select_game:
-                select_game[total_data.user_id] = {}
-                select_game[total_data.user_id]['win'] = 0
-                select_game[total_data.user_id]['lose'] = 0
-                select_game[total_data.user_id]['total'] = 0
-            
-            if total_data.result == '사용자 승리!!':
-                select_game[total_data.user_id]['win'] += 1
-            else:
-                select_game[total_data.user_id]['lose'] += 1
-
-            select_game[total_data.user_id]['total'] += 1
-            
-        print(select_game)
     else:
         return_url = 'login.html'
-    return render_template(return_url,rend_data=data)
+    return render_template(return_url,rend_data=data,rank_data = rank_list())
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -147,7 +159,7 @@ def game_winlose():
         db.session.add(gamelog)
         db.session.commit()
 
-    return {'computer': rps[choice], 'result': reuslt}
+    return {'computer': rps[choice], 'result': reuslt, 'rank': rank_list()}
 
 
 if __name__ == '__main__':
