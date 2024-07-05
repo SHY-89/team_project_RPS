@@ -40,18 +40,27 @@
         .game_result_body tbody tr:nth-child(even) {
             background-color: #c3c3c3;
         }
-        #pagination{
+
+        #pagination {
             text-align: center;
             margin-top: 10px;
             padding: 10px;
         }
-        .logout_bt{
+
+        .logout_bt {
             padding: 5px 5px;
             float: right;
             border: 1px solid;
             background: #00db8a;
             cursor: pointer;
             font-size: 20px;
+        }
+
+        #game_rank_table {
+            list-style: none;
+            border: 1px solid;
+            display: inline-block;
+            padding: 25px;
         }
     </style>
 </head>
@@ -69,6 +78,8 @@
     <hr>
     <h1> 전적 </h1>
     <div class="game_result_body">
+        <ul id="game_rank_table"></ul>
+        <br>
         <span id="game_total_print"></span>
         <table>
             <colgroup>
@@ -88,18 +99,24 @@
             <tbody class="game_results" id="myTable">
             </tbody>
         </table>
-        <div id="pagination"></div> 
-    </div>        
+        <div id="pagination"></div>
+    </div>
     <script>
         let nums = 1
         let gameinfo = []
+        let rankinfo = []
         let total_round = 0
-        let win_lose_draw = [0,0,0]
-        const init_gameinfo = {{ rend_data|tojson }}
+        let win_lose_draw = [0, 0, 0]
+        const init_gameinfo = {{ rend_data| tojson }}
+        const init_rank_data = {{ rank_data| tojson }}
         init_gameinfo.forEach(info_data => {
             gameinfo.push(info_data)
             result_check(info_data)
             total_round++
+        })
+
+        init_rank_data.forEach(info_data => {
+            rankinfo.push(info_data)
         })
 
         const rowsPerPage = 10
@@ -133,9 +150,10 @@
                             data: { 'user_choise': choise },
                             dataType: 'json',
                             success: function (data) {
-                                gameinfo.unshift({'player': print_choise, 'computer' : data.computer, 'result': data.result})
-                                result_check({'player': print_choise, 'computer' : data.computer, 'result': data.result})
+                                gameinfo.unshift({ 'player': print_choise, 'computer': data.computer, 'result': data.result })
+                                result_check({ 'player': print_choise, 'computer': data.computer, 'result': data.result })
                                 total_round++
+                                rankinfo = data.rank
                                 displayTable(currentPage)
                             }
                         })
@@ -153,8 +171,8 @@
             table.innerHTML = ''
 
             const span = document.getElementById("game_total_print")
-            span.innerHTML = '승 : '+win_lose_draw[0]+'   무 : '+win_lose_draw[2]+'   패 : '+win_lose_draw[1]
-            
+            span.innerHTML = '승 : ' + win_lose_draw[0] + '&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp무 : ' + win_lose_draw[2] + '&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp패 : ' + win_lose_draw[1]
+
             let nums = total_round - startIndex
             slicedData.forEach(item => {
                 const row = table.insertRow()
@@ -166,6 +184,14 @@
                 playerCell.innerHTML = item.player
                 computerCell.innerHTML = item.computer
                 resultCell.innerHTML = item.result
+            })
+
+            const rank_table = $("#game_rank_table")
+            rank_table.empty()
+            let rank_num = 0
+            rankinfo.forEach(item => {
+                rank_num++
+                rank_table.append("<li>" + rank_num + ". " + item.user_id + "(승:" + item.win + " 패: " + item.lose + ")</li>")
             })
 
             updatePagination(page)
@@ -190,8 +216,8 @@
                 paginationContainer.appendChild(pageLink)
                 paginationContainer.appendChild(document.createTextNode(" "))
             }
-        } 
-        function result_check(info_data){
+        }
+        function result_check(info_data) {
             switch (info_data.result) {
                 case '비겼 습니다.':
                     win_lose_draw[2]++
@@ -204,7 +230,7 @@
                     break;
             }
         }
-        function logout(){
+        function logout() {
             location.href = "{{ url_for('logout') }}"
         }
         displayTable(currentPage)
