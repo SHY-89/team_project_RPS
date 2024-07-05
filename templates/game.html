@@ -22,19 +22,28 @@
             height: 50px;
             cursor: pointer;
         }
-        .game_result_body table{
+
+        .game_result_body table {
             width: 100%;
             text-align: center;
         }
-        .game_result_body thead tr{
+
+        .game_result_body thead tr {
             background-color: #000;
             color: #fff;
         }
-        .game_result_body tbody tr:nth-child(odd){
+
+        .game_result_body tbody tr:nth-child(odd) {
             background-color: #f9bdbd;
         }
-        .game_result_body tbody tr:nth-child(even){
+
+        .game_result_body tbody tr:nth-child(even) {
             background-color: #c3c3c3;
+        }
+        #pagination{
+            text-align: center;
+            margin-top: 10px;
+            padding: 10px;
         }
     </style>
 </head>
@@ -67,29 +76,40 @@
                     <th>결과</th>
                 </tr>
             </thead>
-            <tbody class="game_results">
+            <tbody class="game_results" id="myTable">
             </tbody>
         </table>
-    </div>
+        <div id="pagination"></div> 
+    </div>        
     <script>
         let nums = 1
+        let gameinfo = []
+        const init_gameinfo = {{ rend_data|tojson }}
+        init_gameinfo.forEach(info_data => {
+            gameinfo.push(info_data)
+        })
+
+        const rowsPerPage = 10
+        let currentPage = 1
+
         $(function () {
+
             $('.player_img').click(function () {
                 const choise = $(this).attr("class").split('player_img')[2]
                 let print_choise = ''
                 switch (choise) {
                     case '1':
                         print_choise = '가위'
-                        break;
+                        break
                     case '2':
                         print_choise = '바위'
-                        break;
+                        break
                     case '3':
                         print_choise = '보'
-                        break;
+                        break
                 }
                 Swal.fire({
-                    title: print_choise+"로 승부 하시겠 습니까?",
+                    title: print_choise + "로 승부 하시겠 습니까?",
                     showCancelButton: true,
                 }).then((result) => {
                     /* Read more about isConfirmed, isDenied below */
@@ -97,25 +117,63 @@
                         $.ajax({
                             url: `{{ url_for('game_winlose') }}`,
                             method: 'GET',
-                            data : {'user_choise' : choise},
-                            dataType : 'json',
+                            data: { 'user_choise': choise },
+                            dataType: 'json',
                             success: function (data) {
-                                let add_html = `<tr>
-                                    <td>`+nums+`</td>
-                                    <td>`+print_choise+`</td>
-                                    <td>`+data.computer+`</td>
-                                    <td>`+data.reuslt+`</td>
-                                    </tr>
-                                    `
-                                $('.game_results').prepend(add_html)
-                                nums++
+                                gameinfo.push({'player': print_choise, 'computer' : data.computer, 'result': data.result})
+                                displayTable(currentPage)
                             }
                         })
 
                     }
-                });
+                })
             })
         })
+
+        function displayTable(page) {
+            const table = document.getElementById("myTable")
+            const startIndex = (page - 1) * rowsPerPage
+            const endIndex = startIndex + rowsPerPage
+            const slicedData = gameinfo.slice(startIndex, endIndex)
+            table.innerHTML = ''
+
+            slicedData.forEach(item => {
+                const row = table.insertRow()
+                const roundCell = row.insertCell(0)
+                const playerCell = row.insertCell(1)
+                const computerCell = row.insertCell(2)
+                const resultCell = row.insertCell(3)
+                roundCell.innerHTML = 0
+                playerCell.innerHTML = item.player
+                computerCell.innerHTML = item.computer
+                resultCell.innerHTML = item.result
+            })
+
+            updatePagination(page)
+        }
+
+        function updatePagination(currentPage) {
+            const pageCount = Math.ceil(gameinfo.length / rowsPerPage)
+            const paginationContainer = document.getElementById("pagination")
+            paginationContainer.innerHTML = ""
+
+            for (let i = 1; i <= pageCount; i++) {
+                const pageLink = document.createElement("a")
+
+                pageLink.href = "#"
+                pageLink.innerText = i
+                pageLink.onclick = function () {
+                    displayTable(i)
+                }
+                if (i === currentPage) {
+                    pageLink.style.fontWeight = "bold"
+                }
+                paginationContainer.appendChild(pageLink)
+                paginationContainer.appendChild(document.createTextNode(" "))
+            }
+        } 
+
+        displayTable(currentPage)
     </script>
 </body>
 

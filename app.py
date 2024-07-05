@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 import os
-from flask import Flask, render_template, url_for, request, session, redirect
+from flask import Flask, render_template, url_for, request, session, redirect, jsonify
 from flask_cors import CORS
 import random
 from datetime import datetime
@@ -38,16 +38,15 @@ class GameLog(db.Model):
 @app.route('/')
 def games():
     return_url = ''
+    data = []
     if 'user_id' in session:
-        ruser_id = session['user_id']
-        # 전적 검색 부분
-        filter_list = GameLog.query.filter_by(user_id=ruser_id).all()
-        print(filter_list)
         return_url = 'game.html'
+        suser_id = session['user_id']
+        select_game = GameLog.query.filter_by(user_id=suser_id).order_by(GameLog.idx.desc()).all()
+        data = [ {'player':gamedata.player,'computer':gamedata.computer, 'result':gamedata.result} for gamedata in select_game]
     else:
         return_url = 'login.html'
-    return render_template(return_url)
-
+    return render_template(return_url,rend_data=data)
 
 @app.route('/login', methods=['POST'])
 def login():
