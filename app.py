@@ -44,6 +44,23 @@ def games():
         suser_id = session['user_id']
         select_game = GameLog.query.filter_by(user_id=suser_id).order_by(GameLog.idx.desc()).all()
         data = [ {'player':gamedata.player,'computer':gamedata.computer, 'result':gamedata.result} for gamedata in select_game]
+
+        select_game = {}
+        for total_data in GameLog.query.filter(GameLog.result.like('%!!')).all():
+            if total_data.user_id not in select_game:
+                select_game[total_data.user_id] = {}
+                select_game[total_data.user_id]['win'] = 0
+                select_game[total_data.user_id]['lose'] = 0
+                select_game[total_data.user_id]['total'] = 0
+            
+            if total_data.result == '사용자 승리!!':
+                select_game[total_data.user_id]['win'] += 1
+            else:
+                select_game[total_data.user_id]['lose'] += 1
+
+            select_game[total_data.user_id]['total'] += 1
+            
+        print(select_game)
     else:
         return_url = 'login.html'
     return render_template(return_url,rend_data=data)
@@ -130,7 +147,7 @@ def game_winlose():
         db.session.add(gamelog)
         db.session.commit()
 
-    return {'computer': rps[choice], 'reuslt': reuslt}
+    return {'computer': rps[choice], 'result': reuslt}
 
 
 if __name__ == '__main__':
