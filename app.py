@@ -23,6 +23,15 @@ class Users(db.Model):
     user_pw = db.Column(db.String(100), nullable=False)
     join_date = db.Column(
         db.DateTime, default=datetime.now(), onupdate=datetime.now())
+    
+class GameLog(db.Model):
+    idx = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(100), nullable=False)
+    player = db.Column(db.String(20), nullable=False)
+    computer = db.Column(db.String(20), nullable=False)
+    result = db.Column(db.String(10), nullable=False)
+    w_date = db.Column(
+        db.DateTime, default=datetime.now(), onupdate=datetime.now())
 
 
 @app.route('/')
@@ -109,6 +118,10 @@ def game_winlose():
         else:
             reuslt = "사용자 승리!!"
 
+    suser_id = session['user_id']
+    gamelog = GameLog(user_id = suser_id,player = rps[user],computer = rps[choice],result = reuslt)
+    db.session.add(gamelog)
+    db.session.commit()
     return {'computer': rps[choice], 'reuslt': reuslt}
 
 
