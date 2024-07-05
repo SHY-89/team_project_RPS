@@ -45,11 +45,19 @@
             margin-top: 10px;
             padding: 10px;
         }
+        .logout_bt{
+            padding: 5px 5px;
+            float: right;
+            border: 1px solid;
+            background: #00db8a;
+            cursor: pointer;
+            font-size: 20px;
+        }
     </style>
 </head>
 
 <body>
-    <h1> 1조 퍼스트 코딩 : RPS WEB GAME </h1>
+    <h1> 1조 퍼스트 코딩 : RPS WEB GAME <span class="logout_bt" onclick="logout()">logout</span></h1>
     <div class="player_game_body">
         <img class="player_img player_img1" src="{{ url_for('static', filename='images/hand-scissors-solid.svg') }}"
             alt="가위">
@@ -125,8 +133,8 @@
                             data: { 'user_choise': choise },
                             dataType: 'json',
                             success: function (data) {
-                                gameinfo.push({'player': print_choise, 'computer' : data.computer, 'result': data.result})
-                                result_check(data)
+                                gameinfo.unshift({'player': print_choise, 'computer' : data.computer, 'result': data.result})
+                                result_check({'player': print_choise, 'computer' : data.computer, 'result': data.result})
                                 total_round++
                                 displayTable(currentPage)
                             }
@@ -146,6 +154,7 @@
 
             const span = document.getElementById("game_total_print")
             span.innerHTML = '승 : '+win_lose_draw[0]+'   무 : '+win_lose_draw[2]+'   패 : '+win_lose_draw[1]
+            
             let nums = total_round - startIndex
             slicedData.forEach(item => {
                 const row = table.insertRow()
@@ -187,7 +196,6 @@
                 case '비겼 습니다.':
                     win_lose_draw[2]++
                     break;
-            
                 case '컴퓨터 승리!!':
                     win_lose_draw[1]++
                     break;
@@ -195,6 +203,9 @@
                     win_lose_draw[0]++
                     break;
             }
+        }
+        function logout(){
+            location.href = "{{ url_for('logout') }}"
         }
         displayTable(currentPage)
     </script>
