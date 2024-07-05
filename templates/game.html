@@ -61,6 +61,7 @@
     <hr>
     <h1> 전적 </h1>
     <div class="game_result_body">
+        <span id="game_total_print"></span>
         <table>
             <colgroup>
                 <col width="5%">
@@ -84,9 +85,13 @@
     <script>
         let nums = 1
         let gameinfo = []
+        let total_round = 0
+        let win_lose_draw = [0,0,0]
         const init_gameinfo = {{ rend_data|tojson }}
         init_gameinfo.forEach(info_data => {
             gameinfo.push(info_data)
+            result_check(info_data)
+            total_round++
         })
 
         const rowsPerPage = 10
@@ -121,6 +126,8 @@
                             dataType: 'json',
                             success: function (data) {
                                 gameinfo.push({'player': print_choise, 'computer' : data.computer, 'result': data.result})
+                                result_check(data)
+                                total_round++
                                 displayTable(currentPage)
                             }
                         })
@@ -137,13 +144,16 @@
             const slicedData = gameinfo.slice(startIndex, endIndex)
             table.innerHTML = ''
 
+            const span = document.getElementById("game_total_print")
+            span.innerHTML = '승 : '+win_lose_draw[0]+'   무 : '+win_lose_draw[2]+'   패 : '+win_lose_draw[1]
+            let nums = total_round - startIndex
             slicedData.forEach(item => {
                 const row = table.insertRow()
                 const roundCell = row.insertCell(0)
                 const playerCell = row.insertCell(1)
                 const computerCell = row.insertCell(2)
                 const resultCell = row.insertCell(3)
-                roundCell.innerHTML = 0
+                roundCell.innerHTML = nums--
                 playerCell.innerHTML = item.player
                 computerCell.innerHTML = item.computer
                 resultCell.innerHTML = item.result
@@ -172,7 +182,20 @@
                 paginationContainer.appendChild(document.createTextNode(" "))
             }
         } 
-
+        function result_check(info_data){
+            switch (info_data.result) {
+                case '비겼 습니다.':
+                    win_lose_draw[2]++
+                    break;
+            
+                case '컴퓨터 승리!!':
+                    win_lose_draw[1]++
+                    break;
+                case '사용자 승리!!':
+                    win_lose_draw[0]++
+                    break;
+            }
+        }
         displayTable(currentPage)
     </script>
 </body>
