@@ -87,6 +87,7 @@ def login():
         if filter_list:
             session['user_id'] = request.form['user_id']
             return redirect(url_for('games'))
+    
 
     return render_template('login.html')
 
