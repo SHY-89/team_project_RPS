@@ -23,7 +23,8 @@ class Users(db.Model):
     user_pw = db.Column(db.String(100), nullable=False)
     join_date = db.Column(
         db.DateTime, default=datetime.now(), onupdate=datetime.now())
-    
+
+
 class GameLog(db.Model):
     idx = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(100), nullable=False)
@@ -38,29 +39,35 @@ class GameLog(db.Model):
 def games():
     return_url = ''
     if 'user_id' in session:
-        user_id = session['user_id']
-        # 전적 검색 부분 
+        ruser_id = session['user_id']
+        # 전적 검색 부분
+        filter_list = GameLog.query.filter_by(user_id=ruser_id).all()
+        print(filter_list)
         return_url = 'game.html'
     else:
         return_url = 'login.html'
     return render_template(return_url)
+
 
 @app.route('/login', methods=['POST'])
 def login():
     if 'user_id' in session:
         return render_template('/')
     elif request.method == 'POST':
-        filter_list = Users.query.filter_by(user_id=request.form['user_id'],user_pw=request.form['user_pw']).all()
+        filter_list = Users.query.filter_by(
+            user_id=request.form['user_id'], user_pw=request.form['user_pw']).all()
         if filter_list:
             session['user_id'] = request.form['user_id']
-            return redirect(url_for('games'))        
-        
+            return redirect(url_for('games'))
+
     return render_template('login.html')
+
 
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
     return redirect(url_for('games'))
+
 
 @app.route('/sign')
 def sign():
@@ -98,30 +105,32 @@ def user_create():
 
 @app.route('/game/winlose')
 def game_winlose():
-
-    user = request.args.get("user_choise")
-    # RPS 부분 추가
-    rps = {'1': '가위', '2': '바위', '3': '보'}
-    computer = ['1', '2', '3']
-    choice = random.choice(computer)
-    reuslt = ""
-    if user == choice:
-        reuslt = "비겼 습니다."
-    elif (choice == '1' or choice == '3') and (user == '1' or user == '3'):
-        if int(choice) % 3 > int(user) % 3:
-            reuslt = "컴퓨터 승리!!"
+    if 'user_id' in session:
+        user = request.args.get("user_choise")
+        # RPS 부분 추가
+        rps = {'1': '가위', '2': '바위', '3': '보'}
+        computer = ['1', '2', '3']
+        choice = random.choice(computer)
+        reuslt = ""
+        if user == choice:
+            reuslt = "비겼 습니다."
+        elif (choice == '1' or choice == '3') and (user == '1' or user == '3'):
+            if int(choice) % 3 > int(user) % 3:
+                reuslt = "컴퓨터 승리!!"
+            else:
+                reuslt = "사용자 승리!!"
         else:
-            reuslt = "사용자 승리!!"
-    else:
-        if int(choice) > int(user):
-            reuslt = "컴퓨터 승리!!"
-        else:
-            reuslt = "사용자 승리!!"
+            if int(choice) > int(user):
+                reuslt = "컴퓨터 승리!!"
+            else:
+                reuslt = "사용자 승리!!"
 
-    suser_id = session['user_id']
-    gamelog = GameLog(user_id = suser_id,player = rps[user],computer = rps[choice],result = reuslt)
-    db.session.add(gamelog)
-    db.session.commit()
+        suser_id = session['user_id']
+        gamelog = GameLog(
+            user_id=suser_id, player=rps[user], computer=rps[choice], result=reuslt)
+        db.session.add(gamelog)
+        db.session.commit()
+
     return {'computer': rps[choice], 'reuslt': reuslt}
 
 
