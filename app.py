@@ -48,6 +48,10 @@ def login():
         
     return render_template('login.html')
 
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)
+    return redirect(url_for('games'))
 
 @app.route('/sign')
 def sign():
