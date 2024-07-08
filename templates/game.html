@@ -7,89 +7,129 @@
     <script src="{{ url_for('static', filename='js/jquery-latest.min.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/sweetalert2.min.css') }}">
     <script src="{{ url_for('static', filename='js/sweetalert2.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/game.css') }}">
     <style>
-        h1 {
-            text-align: center;
-        }
-
-        .player_game_body {
-            display: flex;
-            justify-content: space-around;
-        }
-
-        .player_img {
-            width: 50px;
-            height: 50px;
-            cursor: pointer;
-        }
-        .game_result_body table{
-            width: 100%;
-            text-align: center;
-        }
-        .game_result_body thead tr{
-            background-color: #000;
-            color: #fff;
-        }
-        .game_result_body tbody tr:nth-child(odd){
-            background-color: #f9bdbd;
-        }
-        .game_result_body tbody tr:nth-child(even){
-            background-color: #c3c3c3;
-        }
+        
     </style>
 </head>
 
 <body>
-    <h1> 1조 퍼스트 코딩 : RPS WEB GAME </h1>
-    <div class="player_game_body">
-        <img class="player_img player_img1" src="{{ url_for('static', filename='images/hand-scissors-solid.svg') }}"
-            alt="가위">
-        <img class="player_img player_img2" src="{{ url_for('static', filename='images/hand-back-fist-solid.svg') }}"
-            alt="바위">
-        <img class="player_img player_img3" src="{{ url_for('static', filename='images/hand-solid.svg') }}" alt="보">
-    </div>
-    <br>
-    <hr>
-    <h1> 전적 </h1>
-    <div class="game_result_body">
-        <table>
-            <colgroup>
-                <col width="5%">
-                <col width="*">
-                <col width="*">
-                <col width="10%">
-            </colgroup>
-            <thead>
-                <tr>
-                    <th>순번</th>
-                    <th>플레이어</th>
-                    <th>컴퓨터</th>
-                    <th>결과</th>
-                </tr>
-            </thead>
-            <tbody class="game_results">
-            </tbody>
-        </table>
-    </div>
+    <nav class="navbar bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="https://nbcamp.spartacodingclub.kr/favicon.png" alt="Logo" width="30" height="24"
+                    class="d-inline-block align-text-top">
+                1조 퍼스트 코딩
+            </a>
+            <h1 class="main_title">RPS WEB GAME</h1>
+            <div class="d-flex">
+                <ul class="nav nav-pills">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('game_kdm') }}" href="#">김동민</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('game_khk') }}">김한규</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page">서영환</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('game_cmh') }}">조민희</a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-success" type="button" onclick="logout()">Logout</button>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+    </nav>
+    <main class="container">
+        <div id="myCarousel" class="player_game_body carousel slide mb-6" data-bs-ride="carousel">
+            <img class="player_img player_img1" src="{{ url_for('static', filename='images/hand-scissors-solid.svg') }}"
+                alt="가위">
+            <img class="player_img player_img2"
+                src="{{ url_for('static', filename='images/hand-back-fist-solid.svg') }}" alt="바위">
+            <img class="player_img player_img3" src="{{ url_for('static', filename='images/hand-solid.svg') }}" alt="보">
+        </div>
+        <br>
+        <hr>
+        <h1> 전적 </h1>
+        <div class="game_result_body">
+            <ul id="game_rank_table"></ul>
+            <br>
+            <span id="game_total_print"></span>
+            <table>
+                <colgroup>
+                    <col width="5%">
+                    <col width="*">
+                    <col width="*">
+                    <col width="10%">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>순번</th>
+                        <th>플레이어</th>
+                        <th>컴퓨터</th>
+                        <th>결과</th>
+                    </tr>
+                </thead>
+                <tbody class="game_results" id="myTable">
+                </tbody>
+            </table>
+            <nav aria-label="..." class="pagin_body">
+                <ul class="pagination pagination-lg" id="pagination">
+
+                </ul>
+            </nav>
+        </div>
+    </main>
+    <footer class="container">
+        <hr>
+        <p class="float-end"><a href="#">Back to top</a></p>
+        <p>© 2024–2024 1조 퍼스트 코딩. · <a href="#">김한규</a> · <a href="#">김동민</a> · <a href="#">서영환</a> · <a href="#">조민희</a></p>
+    </footer>
     <script>
         let nums = 1
+        let gameinfo = []
+        let rankinfo = []
+        let total_round = 0
+        let win_lose_draw = [0, 0, 0]
+        const init_gameinfo = {{ rend_data| tojson }}
+        const init_rank_data = {{ rank_data| tojson }}
+        init_gameinfo.forEach(info_data => {
+            gameinfo.push(info_data)
+            result_check(info_data)
+            total_round++
+        })
+
+        init_rank_data.forEach(info_data => {
+            rankinfo.push(info_data)
+        })
+
+        const rowsPerPage = 10
+        let currentPage = 1
+
         $(function () {
+
             $('.player_img').click(function () {
                 const choise = $(this).attr("class").split('player_img')[2]
                 let print_choise = ''
                 switch (choise) {
                     case '1':
                         print_choise = '가위'
-                        break;
+                        break
                     case '2':
                         print_choise = '바위'
-                        break;
+                        break
                     case '3':
                         print_choise = '보'
-                        break;
+                        break
                 }
                 Swal.fire({
-                    title: print_choise+"로 승부 하시겠 습니까?",
+                    title: print_choise + "로 승부 하시겠 습니까?",
                     showCancelButton: true,
                 }).then((result) => {
                     /* Read more about isConfirmed, isDenied below */
@@ -97,25 +137,89 @@
                         $.ajax({
                             url: `{{ url_for('game_winlose') }}`,
                             method: 'GET',
-                            data : {'user_choise' : choise},
-                            dataType : 'json',
+                            data: { 'user_choise': choise },
+                            dataType: 'json',
                             success: function (data) {
-                                let add_html = `<tr>
-                                    <td>`+nums+`</td>
-                                    <td>`+print_choise+`</td>
-                                    <td>`+data.computer+`</td>
-                                    <td>`+data.reuslt+`</td>
-                                    </tr>
-                                    `
-                                $('.game_results').prepend(add_html)
-                                nums++
+                                gameinfo.unshift({ 'player': print_choise, 'computer': data.computer, 'result': data.result })
+                                result_check({ 'player': print_choise, 'computer': data.computer, 'result': data.result })
+                                total_round++
+                                rankinfo = data.rank
+                                displayTable(currentPage)
                             }
                         })
 
                     }
-                });
+                })
             })
         })
+
+        function displayTable(page) {
+            const table = document.getElementById("myTable")
+            const startIndex = (page - 1) * rowsPerPage
+            const endIndex = startIndex + rowsPerPage
+            const slicedData = gameinfo.slice(startIndex, endIndex)
+            table.innerHTML = ''
+
+            const span = document.getElementById("game_total_print")
+            span.innerHTML = '승 : ' + win_lose_draw[0] + '&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp무 : ' + win_lose_draw[2] + '&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp패 : ' + win_lose_draw[1]
+
+            let nums = total_round - startIndex
+            slicedData.forEach(item => {
+                const row = table.insertRow()
+                const roundCell = row.insertCell(0)
+                const playerCell = row.insertCell(1)
+                const computerCell = row.insertCell(2)
+                const resultCell = row.insertCell(3)
+                roundCell.innerHTML = nums--
+                playerCell.innerHTML = item.player
+                computerCell.innerHTML = item.computer
+                resultCell.innerHTML = item.result
+            })
+
+            const rank_table = $("#game_rank_table")
+            rank_table.empty()
+            let rank_num = 0
+            rankinfo.forEach(item => {
+                rank_num++
+                rank_table.append("<li>" + rank_num + ". " + item.user_id + "(승:" + item.win + " 패: " + item.lose + ")</li>")
+            })
+
+            updatePagination(page)
+        }
+
+        function updatePagination(currentPage) {
+            const pageCount = Math.ceil(gameinfo.length / rowsPerPage)
+            const paginationContainer = $("#pagination")
+            paginationContainer.empty()
+
+
+            for (let i = 1; i <= pageCount; i++) {
+                let inner_item = ''
+                if (i === currentPage) {
+                    inner_item = `<li class="page-item active" aria-current="page"><span class="page-link">` + i + `</span></li>`
+                } else {
+                    inner_item = `<li class="page-item"><a class="page-link" href="#">` + i + `</a></li>`
+                }
+                paginationContainer.append(inner_item)
+            }
+        }
+        function result_check(info_data) {
+            switch (info_data.result) {
+                case '비겼 습니다.':
+                    win_lose_draw[2]++
+                    break;
+                case '컴퓨터 승리!!':
+                    win_lose_draw[1]++
+                    break;
+                case '사용자 승리!!':
+                    win_lose_draw[0]++
+                    break;
+            }
+        }
+        function logout() {
+            location.href = "{{ url_for('logout') }}"
+        }
+        displayTable(currentPage)
     </script>
 </body>
 
