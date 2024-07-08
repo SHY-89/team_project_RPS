@@ -13,12 +13,29 @@
     <script src="{{ url_for('static', filename='js/jquery-latest.min.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/sweetalert2.min.css') }}">
     <script src="{{ url_for('static', filename='js/sweetalert2.min.js') }}"></script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/game.css') }}">
+    <style>
+        main.container{
+            margin: 100px auto;
+            width: 15vw;
+            min-width: 320px;
+        }
+    </style>
 </head>
 
-<body class="d-flex align-items-center py-4 bg-body-tertiary">
-    <main class="form-signin w-100 m-auto">
-        <h3>회원가입</h3>
-        <br>
+<body>
+    <nav class="navbar bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="https://nbcamp.spartacodingclub.kr/favicon.png" alt="Logo" width="30" height="24"
+                    class="d-inline-block align-text-top">
+                1조 퍼스트 코딩
+            </a>
+            <h1 class="main_title">Sign</h1>
+        </div>
+    </nav>
+    <main class="container">
         <form class="row g-3" action="{{ url_for('user_create') }}" method="POST">
             <div class="col-md-13">
                 <label for="inputUserid" class="form-label">ID</label>
@@ -46,6 +63,12 @@
             </div>
         </form>
     </main>
+    <footer class="container">
+        <hr>
+        <p class="float-end"><a href="#">Back to top</a></p>
+        <p>© 2024–2024 1조 퍼스트 코딩. · <a href="#">김한규</a> · <a href="#">김동민</a> · <a href="#">서영환</a> · <a
+                href="#">조민희</a></p>
+    </footer>
     <script>
         //패스워드 8자리 이상 영문 숫자 조합 검증 정규식
         let pw_reg = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,25}$/

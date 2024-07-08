@@ -1,7 +1,8 @@
-from flask_sqlalchemy import SQLAlchemy
+
+from flask_sqlalchemy import SQLAlchemy  # type: ignore
 import os
-from flask import Flask, render_template, url_for, request, session, redirect, jsonify
-from flask_cors import CORS
+from flask import Flask, render_template, url_for, request, session, redirect, jsonify  # type: ignore
+from flask_cors import CORS  # type: ignore
 import random
 from datetime import datetime
 app = Flask(__name__)
@@ -100,7 +101,7 @@ def game_khk():
     return render_template(return_url, game_results=data)
 
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     if 'user_id' in session:
         return render_template(url_for('game_syh'))
@@ -237,7 +238,6 @@ def game_kdm():
 
     else:
         return_url = 'login.html'
-
     game_win_lose = ''
     player_choice = ''
     computer_choice = ''
@@ -264,7 +264,6 @@ def game_kdm():
             user_id=suser_id, result='비겼 습니다.').count()
         lose_count = GameLog.query.filter_by(
             user_id=suser_id, result='컴퓨터 승리!!').count()
-
     context = {
         "player_choice": player_choice,
         "computer_choice": computer_choice,
