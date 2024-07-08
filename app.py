@@ -1,35 +1,42 @@
+import app
 from flask import Flask, request, render_template, redirect, url_for, session, flash
-import sqlite3
 import random
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length, EqualTo
-# from request
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+db = SQLAlchemy(app)
 
 
-# SQLite 데이터베이스 초기화 함수
-def init_db():
-    with sqlite3.connect('database.db') as conn:
-        cursor = conn.cursor()
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT UNIQUE NOT NULL,
-                password TEXT NOT NULL
-            )
-        """)
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS records (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER NOT NULL,
-                result TEXT NOT NULL,
-                FOREIGN KEY (user_id) REFERENCES users (id)
-            )
-        """)
-        conn.commit()
+# init_db()
+
+# def create_app():
+#     app = Flask(__name__)
+#     with app.app_context():
+#         init_db()
+#     return app
+
+
+
+# 데이터베이스 정의
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), unique=True, nullable=False)
+    password = db.Column(db.String(20), nullable=False)
+    records = db.relationship('Record', backref='user', lazy=True)
+
+class Record(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    result = db.Column(db.String(20), nullable=False)
+
+
+
+db.create_all()
 
 
 # 사용자
@@ -58,10 +65,6 @@ class SignupForm(FlaskForm):
     submit = SubmitField('Sign Up')
 
 
-# 초기화 함수
-init_db()
-
-
 # 라우트들
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -74,13 +77,13 @@ def signup():
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
-        with sqlite3.connect('database.db') as conn:
-            cursor = conn.cursor()
-            cursor.execute(
-                "INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
-            conn.commit()
-            flash('회원가입이 완료되었습니다. 로그인하세요', 'success')
-            return redirect(url_for('login'))
+
+        new=User(username=username, password=password)
+        db.session.add(new)
+        db.session.commit()
+        
+        flash('회원가입이 완료되었습니다. 로그인하세요', 'success')
+        return redirect(url_for('login'))
     return render_template('signup.html', form=form)
 
 
@@ -92,17 +95,17 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        with sqlite3.connect('database.db') as conn:
-            cursor = conn.cursor()
-            cursor.execute(
-                "SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
-            user = cursor.fetchone()
-            if user:
-                session['username'] = user[1]
-                flash('로그인 완료', 'success')
-                return redirect(url_for('play'))
-            else:
-                flash('다시 시도해주세요.', 'danger')
+
+
+        user = User.query.filter_by(username=username, password=password).first()
+            
+            
+        if user:
+            session['username'] = user.username
+            flash('로그인 완료', 'success')
+            return redirect(url_for('play'))
+        else:
+            flash('다시 시도해주세요.', 'danger')
 
     return render_template('login.html')
 
@@ -136,14 +139,10 @@ def play():
             result = '졌습니다'
 
         # 결과 저장
-        with sqlite3.connect('database.db') as conn:
-            cursor = conn.cursor()
-            cursor.execute(
-                "SELECT id FROM users WHERE username = ?", (session['username'],))
-            user_id = cursor.fetchone()[0]
-            cursor.execute(
-                "INSERT INTO records (user_id, result) VALUES (?, ?)", (user_id, result))
-            conn.commit()
+        user = User.query.filter_by(username=session['username']).first()
+        new_record = Record(user_id=user.id, result=result)
+        db.session.add(new_record)
+        db.session.commit()
 
         return render_template('result.html', user_choice=user_choice, computer_choice=computer_choice, result=result)
 
