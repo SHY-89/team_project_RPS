@@ -315,8 +315,8 @@ def game_cmh():
                            computer=computer_choice, result=result)
         db.session.add(new_record)
         db.session.commit()
-
-        return render_template('result.html', user_choice=user_choice, computer_choice=computer_choice, result=result)
+        print(form,{'user_choice':user_choice, 'computer_choice':computer_choice, 'result':result})
+        return render_template('game_cmh.html',form=form, result = {'user_choice':user_choice, 'computer_choice':computer_choice, 'result':result})
 
 
     return render_template('game_cmh.html', form=form)
