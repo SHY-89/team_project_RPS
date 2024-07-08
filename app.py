@@ -9,7 +9,6 @@ from wtforms.validators import DataRequired, Length, EqualTo
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
-bootstrap = Bootstrap(app)
 
 
 # SQLite 데이터베이스 초기화 함수
