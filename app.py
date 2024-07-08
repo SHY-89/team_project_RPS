@@ -181,7 +181,6 @@ def game_winlose():
             user_id=suser_id, player=rps[user], computer=rps[choice], result=reuslt)
         db.session.add(gamelog)
         db.session.commit()
-
     return {'computer': rps[choice], 'result': reuslt, 'rank': rank_list()}
 
 
