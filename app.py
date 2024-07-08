@@ -1,7 +1,7 @@
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy # type: ignore
 import os
-from flask import Flask, render_template, url_for, request, session, redirect, jsonify
-from flask_cors import CORS
+from flask import Flask, render_template, url_for, request, session, redirect, jsonify # type: ignore
+from flask_cors import CORS # type: ignore
 import random
 from datetime import datetime
 app = Flask(__name__)
@@ -100,7 +100,7 @@ def game_khk():
     return render_template(return_url, game_results=data)
 
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['GET','POST'])
 def login():
     if 'user_id' in session:
         return render_template(url_for('game_syh'))
@@ -223,6 +223,52 @@ def submit():
         'result': result,
         'game_results': game_results_dict
     })
+
+@app.route('/game/kdm', methods=['GET', 'POST'])
+def game_kdm():
+    return_url = ''
+    data = []
+    if 'user_id' in session:
+        return_url = 'game_kdm.html'
+        suser_id = session['user_id']
+        data = GameLog.query.filter_by(
+            user_id=suser_id).order_by(GameLog.idx.desc()).limit(10).all()
+
+    else:
+        return_url = 'login.html'
+    game_win_lose = ''
+    player_choice = ''
+    computer_choice = ''
+    win_count = 0
+    draw_count = 0
+    lose_count = 0
+    if request.method == 'POST':
+        player_choice = request.form['player_choice']
+        computer_choice = random.choice(['가위', '바위', '보'])
+        if (player_choice == '가위' and computer_choice == '보') or (player_choice == '바위' and computer_choice == '가위') or (player_choice == '보' and computer_choice == '바위'):
+            game_win_lose = '사용자 승리!!'
+
+        elif player_choice == computer_choice:
+            game_win_lose = '비겼 습니다.'
+        else:
+            game_win_lose = '컴퓨터 승리!!'
+        new_game = GameLog(user_id=suser_id, player=player_choice,
+                           computer=computer_choice, result=game_win_lose)
+        db.session.add(new_game)
+        db.session.commit()
+        win_count = GameLog.query.filter_by(user_id=suser_id, result='사용자 승리!!').count()
+        draw_count = GameLog.query.filter_by(user_id=suser_id, result='비겼 습니다.').count()
+        lose_count = GameLog.query.filter_by(user_id=suser_id, result='컴퓨터 승리!!').count()
+    context = {
+        "player_choice": player_choice,
+        "computer_choice": computer_choice,
+        "game_win_lose": game_win_lose,
+        "win_count": win_count,
+        "draw_count": draw_count,
+        "lose_count": lose_count
+    }
+
+    return render_template(return_url, data=context)
 
 
 if __name__ == '__main__':

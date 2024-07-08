@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>RPS Game</title>
+    <script src="{{ url_for('static', filename='js/jquery-latest.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sweetalert2.min.css') }}">
+    <script src="{{ url_for('static', filename='js/sweetalert2.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/game.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+
+<body>
+    <nav class="navbar bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="https://nbcamp.spartacodingclub.kr/favicon.png" alt="Logo" width="30" height="24"
+                    class="d-inline-block align-text-top">
+                1조 퍼스트 코딩
+            </a>
+            <h1 class="main_title">RPS WEB GAME</h1>
+            <div class="d-flex">
+                <ul class="nav nav-pills">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page">김동민</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('game_khk') }}">김한규</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('game_syh') }}">서영환</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">조민희</a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-success" type="button" onclick="logout()">Logout</button>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+    </nav>
+    <main class="container">
+        <div>
+            <h1>가위바위보게임</h1>
+        </div>
+        <div class="container">
+            <form method="POST">
+                <button class="game_button" type="submit" name="player_choice" value="가위"><img
+                        src="../static/images/scissors.png" alt=""></button>
+                <button class="game_button" type="submit" name="player_choice" value="바위"><img
+                        src="../static/images/rock.png" alt=""></button>
+                <button class="game_button" type="submit" name="player_choice" value="보"><img
+                        src="../static/images/paper.png" alt=""></button>
+            </form>
+        </div>
+        <div class=base_margin>
+            <div>
+                <p style="margin: 20px; font-size: 30px;">{{data.player_choice}}</p>
+            </div>
+            <div>
+                <p style="margin: 20px; padding: 20px; font-size: 50px">{{data.game_win_lose}}</p>
+            </div>
+            <div>
+                <p style="margin: 20px; font-size: 30px;">{{data.computer_choice}}</p>
+            </div>
+        </div>
+        <div class=base_margin>
+            <p style="margin: 20px; font-size: 30px;">승리 : {{data.win_count}}</p>
+            <p style="margin: 20px; font-size: 30px;">무승부 : {{data.draw_count}}</p>
+            <p style="margin: 20px; font-size: 30px;">패배 : {{data.lose_count}}</p>
+        </div>
+    </main>
+    
+    <footer class="container">
+        <hr>
+        <p class="float-end"><a href="#">Back to top</a></p>
+        <p>© 2024–2024 1조 퍼스트 코딩. · <a href="#">김한규</a> · <a href="#">김동민</a> · <a href="#">서영환</a> · <a href="#">조민희</a></p>
+    </footer>
+</body>
+
+</html>
