@@ -75,6 +75,15 @@
             </div>
             <button type="submit" class="btn btn-primary">패 제출하기</button>
         </form>
+        {% if 'user_choice' in result %}
+        <div class="container">
+            <h1>승부</h1>
+            <p>사용자: {{ result.user_choice }}</p>
+            <p>컴퓨터: {{ result.computer_choice }}</p>
+            <p>승부: {{ result.result }}</p>
+            <p><a href="{{ url_for('game_cmh') }}" class="btn btn-primary">다시 하기</a></p>
+        </div>
+        {% endif %}
     </main>
     <footer class="container">
         <hr>
