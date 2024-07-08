@@ -1,10 +1,11 @@
 
 from flask_sqlalchemy import SQLAlchemy  # type: ignore
 import os
-from flask import Flask, render_template, url_for, request, session, redirect, jsonify  # type: ignore
+from flask import Flask, render_template, url_for, request, session, redirect, jsonify, flash  # type: ignore
 from flask_cors import CORS  # type: ignore
 import random
 from datetime import datetime
+
 app = Flask(__name__)
 
 # DB 기본 코드
@@ -279,6 +280,12 @@ def game_kdm():
     }
 
     return render_template(return_url, data=context)
+
+
+@app.route('/game/cmh', methods=['GET', 'POST'])
+def game_cmh():
+    
+    return render_template('game_cmh.html')
 
 
 if __name__ == '__main__':
