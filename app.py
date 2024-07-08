@@ -263,12 +263,12 @@ def game_kdm():
                            computer=computer_choice, result=game_win_lose)
         db.session.add(new_game)
         db.session.commit()
-        win_count = GameLog.query.filter_by(
-            user_id=suser_id, result='사용자 승리!!').count()
-        draw_count = GameLog.query.filter_by(
-            user_id=suser_id, result='비겼 습니다.').count()
-        lose_count = GameLog.query.filter_by(
-            user_id=suser_id, result='컴퓨터 승리!!').count()
+    win_count = GameLog.query.filter_by(
+        user_id=suser_id, result='사용자 승리!!').count()
+    draw_count = GameLog.query.filter_by(
+        user_id=suser_id, result='비겼 습니다.').count()
+    lose_count = GameLog.query.filter_by(
+        user_id=suser_id, result='컴퓨터 승리!!').count()
     context = {
         "player_choice": player_choice,
         "computer_choice": computer_choice,
