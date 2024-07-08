@@ -87,6 +87,6 @@
 |/login|POST|user_id,user_pw||로그인에 성공하면 서버에서 해당 유저의 세션을 생성 후 게임화면으로 이동 아니라면 로그인 페이지 그대로 새로고침|
 |/logout|GET|||로그인 세션 값을 파기 후 로그인 페이지로 이동|
 |/game/winlose|GET|user_choise|{'computer': computer, 'result': reuslt, 'rank': rank_list}|유저가 선택한 user_choise(가위,바위,보)를 확인하여 컴퓨터가 선택한 computer(가위,바위,보)를 비교하여 그 결과 값을 데이터베이스에 저장 후 computer가 선택한 (가위,바위,보)와 결과값과 함께 랭킹 정보를 담은 rank를 리턴|
-|/submit|POST|user_input|{'user_choice': user_choice, 'computer_choice': computer_choice, 'result': result, 'game_results': game_results }||유저가 선택한 user_input(1:가위,2:바위,3:보)와 컴퓨터가 선택한 computer_choice(가위,바위,보)를 비교하여 그 결과 값을 데이터베이스에 저장 후 유저가 선택한 user_choice(가위,바위,보) computer가 선택한 computer_choice(가위,바위,보)와 결과값과 해당 유저 최근 전적 10개를 담은 game_results 값을 리턴 |
+|/submit|POST|user_input|{'user_choice': user_choice, 'computer_choice': computer_choice, 'result': result, 'game_results': game_results }|유저가 선택한 user_input(1:가위,2:바위,3:보)와 컴퓨터가 선택한 computer_choice(가위,바위,보)를 비교하여 그 결과 값을 데이터베이스에 저장 후 유저가 선택한 user_choice(가위,바위,보) computer가 선택한 computer_choice(가위,바위,보)와 결과값과 해당 유저 최근 전적 10개를 담은 game_results 값을 리턴 |
 |/game/kdm|POST|player_choice|{ "player_choice": player_choice, "computer_choice": computer_choice, "game_win_lose": game_win_lose, "win_count": win_count, "draw_count": draw_count, "lose_count": lose_count }|유저가 선택한 player_choice('가위', '바위', '보') 와 컴퓨터가 선택한 computer_choice(가위,바위,보)를 비교하여 그 결과 값 game_win_lose 을 데이터베이스에 저장 후 현재 유저가 선택한 값(player_choice)과 컴퓨터가 선택한값(computer_choice), 결과 값(game_win_lose), 유저 전체 승(win_count), 무(draw_count), 패(lose_count) 데이틀 리턴|
 |/game/cmh|GET,POST|---|---|------|
