@@ -193,13 +193,13 @@ def submit():
     computer_choice = random.choice(choices)
 
     if user_choice == computer_choice:
-        result = 'DRAW'
+        result = '비겼 습니다.'
     elif (user_choice == '가위' and computer_choice == '보') or \
             (user_choice == '바위' and computer_choice == '가위') or \
             (user_choice == '보' and computer_choice == '바위'):
-        result = 'WIN'
+        result = '사용자 승리!!'
     else:
-        result = 'LOSE'
+        result = '컴퓨터 승리!!'
 
     # 결과 저장
     suser_id = session['user_id']
@@ -212,9 +212,8 @@ def submit():
     print(
         f"User choice: {user_choice}, Computer choice: {computer_choice}, {result}")
 
-    
     game_results = GameLog.query.filter_by(
-            user_id=suser_id).order_by(GameLog.idx.desc()).limit(10).all()
+        user_id=suser_id).order_by(GameLog.idx.desc()).limit(10).all()
     game_results_dict = [{'user_choice': r.player, 'computer_choice': r.computer, 'result': r.result} for r
                          in game_results]
 
