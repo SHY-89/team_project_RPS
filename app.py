@@ -45,49 +45,71 @@ def rank_list():
             select_game[total_data.user_id]['lose'] = 0
             select_game[total_data.user_id]['total'] = 0
             select_game[total_data.user_id]['avg'] = 0
-        
+
         if total_data.result == '사용자 승리!!':
             select_game[total_data.user_id]['win'] += 1
         else:
             select_game[total_data.user_id]['lose'] += 1
 
         select_game[total_data.user_id]['total'] += 1
-        select_game[total_data.user_id]['avg'] = int((select_game[total_data.user_id]['win'] / select_game[total_data.user_id]['total']) * 100)
-    
-    sorted_data = dict(sorted(select_game.items(), key=lambda item: item[1]['avg'], reverse=True))
+        select_game[total_data.user_id]['avg'] = int(
+            (select_game[total_data.user_id]['win'] / select_game[total_data.user_id]['total']) * 100)
+
+    sorted_data = dict(
+        sorted(select_game.items(), key=lambda item: item[1]['avg'], reverse=True))
     custom_data = []
     i = 1
-    for key,append_data in sorted_data.items():
-        if i == 6 : break
+    for key, append_data in sorted_data.items():
+        if i == 6:
+            break
         custom_data.append(append_data)
         i += 1
     return custom_data
 
-@app.route('/')
-def games():
+
+@app.route('/game/syh')
+def game_syh():
     return_url = ''
     data = []
     if 'user_id' in session:
         return_url = 'game.html'
         suser_id = session['user_id']
-        select_game = GameLog.query.filter_by(user_id=suser_id).order_by(GameLog.idx.desc()).all()
-        data = [ {'player':gamedata.player,'computer':gamedata.computer, 'result':gamedata.result} for gamedata in select_game]
+        select_game = GameLog.query.filter_by(
+            user_id=suser_id).order_by(GameLog.idx.desc()).all()
+        data = [{'player': gamedata.player, 'computer': gamedata.computer,
+                 'result': gamedata.result} for gamedata in select_game]
 
     else:
         return_url = 'login.html'
-    return render_template(return_url,rend_data=data,rank_data = rank_list())
+    return render_template(return_url, rend_data=data, rank_data=rank_list())
+
+
+@app.route('/game/khk')
+def game_khk():
+    return_url = ''
+    data = []
+    if 'user_id' in session:
+        return_url = 'game_khk.html'
+        suser_id = session['user_id']
+        data = GameLog.query.filter_by(
+            user_id=suser_id).order_by(GameLog.idx.desc()).limit(10).all()
+
+    else:
+        return_url = 'login.html'
+
+    return render_template(return_url, game_results=data)
+
 
 @app.route('/login', methods=['POST'])
 def login():
     if 'user_id' in session:
-        return render_template('/')
+        return render_template(url_for('game_syh'))
     elif request.method == 'POST':
         filter_list = Users.query.filter_by(
             user_id=request.form['user_id'], user_pw=request.form['user_pw']).all()
         if filter_list:
             session['user_id'] = request.form['user_id']
-            return redirect(url_for('games'))
-    
+            return redirect(url_for('game_syh'))
 
     return render_template('login.html')
 
@@ -95,7 +117,7 @@ def login():
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
-    return redirect(url_for('games'))
+    return redirect(url_for('game_syh'))
 
 
 @app.route('/sign')
@@ -161,6 +183,47 @@ def game_winlose():
         db.session.commit()
 
     return {'computer': rps[choice], 'result': reuslt, 'rank': rank_list()}
+
+
+@app.route('/submit', methods=['POST'])
+def submit():
+    choices = ['가위', '바위', '보']
+    user_input = int(request.form['user_input'])
+    user_choice = choices[user_input - 1]
+    computer_choice = random.choice(choices)
+
+    if user_choice == computer_choice:
+        result = 'DRAW'
+    elif (user_choice == '가위' and computer_choice == '보') or \
+            (user_choice == '바위' and computer_choice == '가위') or \
+            (user_choice == '보' and computer_choice == '바위'):
+        result = 'WIN'
+    else:
+        result = 'LOSE'
+
+    # 결과 저장
+    suser_id = session['user_id']
+    gamelog = GameLog(
+        user_id=suser_id, player=user_choice, computer=computer_choice, result=result)
+
+    db.session.add(gamelog)
+    db.session.commit()
+
+    print(
+        f"User choice: {user_choice}, Computer choice: {computer_choice}, {result}")
+
+    
+    game_results = GameLog.query.filter_by(
+            user_id=suser_id).order_by(GameLog.idx.desc()).limit(10).all()
+    game_results_dict = [{'user_choice': r.player, 'computer_choice': r.computer, 'result': r.result} for r
+                         in game_results]
+
+    return jsonify({
+        'user_choice': user_choice,
+        'computer_choice': computer_choice,
+        'result': result,
+        'game_results': game_results_dict
+    })
 
 
 if __name__ == '__main__':
