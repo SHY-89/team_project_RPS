@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPS Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sign-in.css') }}">
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='js/jquery-latest.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sweetalert2.min.css') }}">
+    <script src="{{ url_for('static', filename='js/sweetalert2.min.js') }}"></script>
+</head>
+
+<body class="d-flex align-items-center py-4 bg-body-tertiary">
+    <main class="form-signin w-100 m-auto">
+        <h3>회원가입</h3>
+        <br>
+        <form class="row g-3" action="{{ url_for('user_create') }}" method="POST">
+            <div class="col-md-13">
+                <label for="inputUserid" class="form-label">ID</label>
+                <input type="text" name="user_id" class="form-control is-invalid is-valid" id="inputUserid" value=""
+                    required>
+                <div class="valid-feedback">
+                    ID는 4자 이상 입력하셔야 합니다.
+                </div>
+            </div>
+            <div class="col-md-13">
+                <label for="inputUserName" class="form-label">NAME</label>
+                <input type="text" name="user_name" class="form-control is-invalid is-valid" id="inputUserName" value=""
+                    required>
+            </div>
+            <div class="col-md-13">
+                <label for="inputPassword4" class="form-label">Password</label>
+                <input type="password" name="user_pw" class="form-control is-invalid is-valid" id="inputPassword4"
+                    value="" required>
+                <div class="valid-feedback">
+                    비밀번호는 8자 이상 영문숫자를 조합 하셔야 합니다.
+                </div>
+            </div>
+            <div class="col-12">
+                <button class="btn btn-primary" type="button" onclick="signup()">Sign</button>
+            </div>
+        </form>
+    </main>
+    <script>
+        //패스워드 8자리 이상 영문 숫자 조합 검증 정규식
+        let pw_reg = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,25}$/
+        //id 4자리 
+        let id_reg = /^(?=.*).{4,25}$/
+        $(function () {
+            $('#inputUserid').keyup(function () {
+                $(this).removeClass('is-invalid')
+
+                if (id_reg.test($(this).val()) == false || $(this).val() == '') {
+                    $(this).addClass('is-invalid')
+                    $(this).closest('div').children("div").text("ID는 4자 이상 입력하셔야 합니다.")
+                } else {
+                    $(this).closest('div').children("div").text("")
+                }
+            })
+            $('#inputPassword4').keyup(function () {
+
+                $(this).removeClass('is-invalid')
+                if (pw_reg.test($(this).val()) == false || $(this).val() == '') {
+                    $(this).addClass('is-invalid')
+                    $(this).closest('div').children("div").text("비밀번호는 8자 이상 영문숫자를 조합 하셔야 합니다.")
+                } else {
+                    $(this).closest('div').children("div").text("")
+                }
+            })
+            $('#inputUserName').keyup(function () {
+                $(this).removeClass('is-invalid')
+                if ($(this).val() == '') {
+                    $(this).addClass('is-invalid')
+                }
+            })
+        })
+        function signup(check = true) {
+            if ($("#inputUserid").hasClass("is-invalid") !== true && $("#inputPassword4").hasClass("is-invalid") !== true && $("#inputUserName").hasClass("is-invalid") !== true) {
+                if (check) {
+                    $.ajax({
+                        url: `{{ url_for('check_user') }}`,
+                        method: 'GET',
+                        data: { 'user_id': $('#inputUserid').val() },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.reuslt == 'fail') {
+                                $('#inputUserid').addClass('is-invalid')
+                                $('#inputUserid').closest('div').children("div").text("ID가 중복 되었습니다.")
+                            } else {
+                                signup(false)
+                            }
+                        }
+                    })
+                } else {
+                    $.ajax({
+                        url: `{{ url_for('user_create') }}`,
+                        method: 'POST',
+                        data: { 'user_id': $('#inputUserid').val(), 'user_name': $('#inputUserName').val(), 'user_pw': $('#inputPassword4').val() },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.reuslt == 'fail') {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: "가입에 실패 하였습니다.",
+                                })
+                            } else {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: "가입 되었습니다.",
+                                }).then((result) => {
+                                    location.href = "{{ url_for('login') }}"
+                                })
+                            }
+                        }
+                    })
+                }
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: "입력값이 비었거나 조건에 맞지 아는 부분 있습니다.",
+                })
+            }
+
+        }
+    </script>
+</body>
+
+</html>
