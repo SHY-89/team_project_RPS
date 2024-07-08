@@ -80,8 +80,8 @@
 
 
 ## API
-	|API 호출 주소|method_type|parameter|return|설명|
-	|---|---|---|---|------|
- 	|/user/create|POST|user_id,user_pw,user_name|{'reuslt': result}|result: 'fail' & 'sussece' 회원가입 요청하여 회원이 등록되면 sussece  등록이 실패되면 fail를 리턴|
+|API 호출 주소|method type|parameter|return|설명|
+|---|---|---|---|------|
+|/user/create|POST|user_id,user_pw,user_name|{'reuslt': result}|result: 'fail' & 'sussece' 회원가입 요청하여 회원이 등록되면 sussece  등록이 실패되면 fail를 리턴|
 											
 											
