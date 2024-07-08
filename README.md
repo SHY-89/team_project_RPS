@@ -17,9 +17,10 @@
 ## 요구사항
 
 	-회원 가입 페이지
+ 		회원 정보를 입력하여 회원 가입
 		-회원 정보
 			이름
-			이메일(아이디)
+			아이디
 			비밀번호
 
 	-로그인 페이지
@@ -31,7 +32,7 @@
 		플레이어와 컴퓨터의 선택을 비교하여 승패를 판정
 		결과를 출력하여 플레이어가 이겼는지, 컴퓨터가 이겼는지, 비겼는지를 노출
 
-	-전적 페이지
+	-전적
 		게임의 승,무,패를 리스트 형식으로 노출
 		최대 노출 수만큼 노출 후 페이징
 		회원 수정
@@ -39,22 +40,22 @@
 		변경시 로그인 변경전 비밀번호 입력 필요
 	
 	-데이터베이스
-
-		회원정보(users)
-			idx int primary key 고유 키
-			uname varchar not null 유저 이름
-			-> user_name 명칭 수정
-			email varchar not null 유저 아이디(이메일)
-			-> user_id 명칭 수정
-			pw varchar not null 유저 패스워드 보안
-			-> user_pw 명칭 수정
-		게임기록(game_log)
-			idx int primary key 고유 키
-			round int not null 유저의 게임 횟수
-			player varchar not null 유저가 선택한 가위,바위,보(1:가위,2:바위,보:3)
-			computer varchar not null 컴퓨터가 선택한 가위,바위,보(1:가위,2:바위,보:3)
-			win_lose char not null 유저의 승,무,패(승: w, 패: l, 무: d)
-
+ 		SqlLite
+		회원정보(Users)
+			idx		Int		primarykey
+			user_id		String		유저 아이디
+			user_name	String		유저 이름
+			user_pw		String		유저 패스워드
+			join_date	DateTime	가입일자
+   
+		게임기록(GameLog)
+			idx		Int		primarykey
+			user_id		String		유저 아이디
+			player		String		유저가 선택한 가위,바위,보
+			computer	String		컴퓨터가 선택한 가위,바위,보
+			result		String		가위,바위,보 결과
+			w_date		DateTime	게임 일자
+   
    	- 랭킹
     		유저별로 가장 높은 승률을 가진 유저 10 순위까지 지정하여 노출
 
@@ -65,14 +66,22 @@
 	jquery 				1.11.1
 	sweetalert 			2.1.2
 	Flask-Cors         		4.0.1
-	flask-sqlalchemy		3.1.1
-	hashlib
+	Flask-SQLAlchemy		3.1.1
+	Flask-WTF			1.2.1
+ 	WTForms				3.1.2
 	random
 
 ## 개발사항
 
-	회원 가입 페이지 		개발완료
-	로그인 페이지			프론트 완료, 백단 작업 대기
-	게임 페이지			프론트 완료, 게임 동작 완료, 데이터베이스 생성 및 입출력 작업 대기
-	전적 페이지			게임 페이지 노출, 데이베이스 연결 및 출력 작업 대기
- 	랭킹 				개발 대기
+	회원 가입 페이지 		서영환, 조민희 개발 
+	로그인 페이지			서영환, 조민희 개발 
+	게임&전적			김동민, 김한규, 서영환, 조민희 개발
+ 	랭킹 				서영환 개발
+
+
+## API
+	|API 호출 주소|method_type|parameter|return|설명|
+	|---|---|---|---|------|
+ 	|/user/create|POST|user_id,user_pw,user_name|{'reuslt': result}|result: 'fail' & 'sussece' 회원가입 요청하여 회원이 등록되면 sussece  등록이 실패되면 fail를 리턴|
+											
+											
