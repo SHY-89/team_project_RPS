@@ -68,6 +68,11 @@ def rank_list():
     return custom_data
 
 
+@app.route('/')
+def index():
+    return render_template('login.html')
+
+
 @app.route('/game/syh')
 def game_syh():
     return_url = ''
@@ -101,10 +106,10 @@ def game_khk():
     return render_template(return_url, game_results=data)
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['POST'])
 def login():
     if 'user_id' in session:
-        return render_template(url_for('game_syh'))
+        return redirect(url_for('game_syh'))
     elif request.method == 'POST':
         filter_list = Users.query.filter_by(
             user_id=request.form['user_id'], user_pw=request.form['user_pw']).all()
@@ -118,7 +123,7 @@ def login():
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
-    return redirect(url_for('game_syh'))
+    return redirect(url_for('index'))
 
 
 @app.route('/sign')
