@@ -14,7 +14,7 @@
 </head>
 
 <body>
-    <nav class="navbar bg-body-tertiary">
+    <nav class="navbar bg-body-tertiary" style="width: 100%;">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
                 <img src="https://nbcamp.spartacodingclub.kr/favicon.png" alt="Logo" width="30" height="24"
@@ -45,35 +45,35 @@
         </div>
     </nav>
     <main class="container">
-        <div>
-            <h1>가위바위보게임</h1>
-        </div>
-        <div class="container">
-            <form method="POST">
-                <button class="game_button" type="submit" name="player_choice" value="가위"><img
-                        src="../static/images/scissors.png" alt=""></button>
-                <button class="game_button" type="submit" name="player_choice" value="바위"><img
-                        src="../static/images/rock.png" alt=""></button>
-                <button class="game_button" type="submit" name="player_choice" value="보"><img
-                        src="../static/images/paper.png" alt=""></button>
-            </form>
-        </div>
-        <div class=base_margin>
-            <div>
-                <p style="margin: 20px; font-size: 30px;">{{data.player_choice}}</p>
+        <div class="kdm_css">
+            <div class="container">
+                <form method="POST">
+                    <button class="game_button" type="submit" name="player_choice" value="가위"><img class="RPS_img"
+                            src="../static/images/scissors.png" alt=""></button>
+                    <button class="game_button" type="submit" name="player_choice" value="바위"><img class="RPS_img"
+                            src="../static/images/rock.png" alt=""></button>
+                    <button class="game_button" type="submit" name="player_choice" value="보"><img class="RPS_img"
+                            src="../static/images/paper.png" alt=""></button>
+                </form>
             </div>
-            <div>
-                <p style="margin: 20px; padding: 20px; font-size: 50px">{{data.game_win_lose}}</p>
+            <div class=base_margin>
+                <div>
+                    <p style="margin: 20px; font-size: 30px;">{{data.player_choice}}</p>
+                </div>
+                <div>
+                    <p style="margin: 20px; padding: 20px; font-size: 50px">{{data.game_win_lose}}</p>
+                </div>
+                <div>
+                    <p style="margin: 20px; font-size: 30px;">{{data.computer_choice}}</p>
+                </div>
             </div>
-            <div>
-                <p style="margin: 20px; font-size: 30px;">{{data.computer_choice}}</p>
+            <div class=base_margin>
+                <p style="margin: 20px; font-size: 30px;">승리 : {{data.win_count}}</p>
+                <p style="margin: 20px; font-size: 30px;">무승부 : {{data.draw_count}}</p>
+                <p style="margin: 20px; font-size: 30px;">패배 : {{data.lose_count}}</p>
             </div>
         </div>
-        <div class=base_margin>
-            <p style="margin: 20px; font-size: 30px;">승리 : {{data.win_count}}</p>
-            <p style="margin: 20px; font-size: 30px;">무승부 : {{data.draw_count}}</p>
-            <p style="margin: 20px; font-size: 30px;">패배 : {{data.lose_count}}</p>
-        </div>
+
     </main>
 
     <footer class="container">
