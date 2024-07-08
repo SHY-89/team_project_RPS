@@ -5,6 +5,8 @@ from flask import Flask, render_template, url_for, request, session, redirect, j
 from flask_cors import CORS  # type: ignore
 import random
 from datetime import datetime
+from flask_wtf import FlaskForm
+from wtforms import SelectField, SubmitField
 
 app = Flask(__name__)
 
@@ -281,11 +283,43 @@ def game_kdm():
 
     return render_template(return_url, data=context)
 
+# 가위바위보
+class PlayForm(FlaskForm):
+    choice = SelectField('나의 패 선택하기', choices=['가위','바위','보'])
+    submit = SubmitField('Play')
 
 @app.route('/game/cmh', methods=['GET', 'POST'])
 def game_cmh():
+    if 'user_id' not in session:
+        flash('우선 로그인하세요.', 'warning')
+        return redirect(url_for('login'))
     
-    return render_template('game_cmh.html')
+    form = PlayForm()
+    if form.validate_on_submit():
+        user_choice = form.choice.data
+        computer_choice = random.choice(['가위', '바위', '보'])
+
+        # 가위바위보 규칙
+        if user_choice == computer_choice:
+            result = '비겼습니다'
+        elif (user_choice == '가위' and computer_choice == '보') or \
+             (user_choice == '바위' and computer_choice == '가위') or \
+             (user_choice == '보' and computer_choice == '바위'):
+            result = '이겼습니다'
+        else:
+            result = '졌습니다'
+
+        # 결과 저장
+        suser_id = session['user_id']
+        new_record = GameLog(user_id=suser_id, player=user_choice,
+                           computer=computer_choice, result=result)
+        db.session.add(new_record)
+        db.session.commit()
+
+        return render_template('result.html', user_choice=user_choice, computer_choice=computer_choice, result=result)
+
+
+    return render_template('game_cmh.html', form=form)
 
 
 if __name__ == '__main__':

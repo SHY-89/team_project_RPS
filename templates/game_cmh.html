@@ -8,7 +8,12 @@
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/game.css') }}">
     <style>
-
+        form{
+            width: 50%;
+            margin: 0 auto;
+            padding: 20px 0;
+            line-height: 5;
+        }
     </style>
 </head>
 
@@ -44,7 +49,32 @@
         </div>
     </nav>
     <main class="container">
-        
+        <h1>가위바위보 게임</h1>
+        {% if 'user_id' not in session %}
+        <div class="alert alert-warning" role="alert">
+            먼저 로그인하세요
+        </div>
+        {% endif %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.choice.label(class="form-control-label") }}
+                {{ form.choice(class="form-control") }}
+                {% for error in form.choice.errors %}
+                <small class="form-text text-danger">{{ error }}</small>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary">패 제출하기</button>
+        </form>
     </main>
     <footer class="container">
         <hr>
