@@ -321,6 +321,5 @@ def game_cmh():
 
     return render_template('game_cmh.html', form=form)
 
-
 if __name__ == '__main__':
     app.run()
