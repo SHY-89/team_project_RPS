@@ -1,6 +1,5 @@
 from flask import Flask, request, render_template, redirect, url_for, session, flash
 import sqlite3
-from flask_bootstrap import Bootstrap
 import random
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
