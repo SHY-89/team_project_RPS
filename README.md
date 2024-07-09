@@ -87,7 +87,4 @@
 |/check/user|GET|user_id|{'reuslt': result}|result: 'fail' & 'sussece' 회원 가입시 중복된 user_id를 확인 하여 중복 된 아이디가 있으면 fail를 중복된 아이디가 없으면 sussece를 리턴|
 |/login|POST|user_id,user_pw||로그인에 성공하면 서버에서 해당 유저의 세션을 생성 후 게임화면으로 이동 아니라면 로그인 페이지 그대로 새로고침|
 |/logout|GET|||로그인 세션 값을 파기 후 로그인 페이지로 이동|
-|/game/rps|POST|player_choice, kdm, khk, syh, cmh|kdm => /game/kdm 페이지 이동|player_choice의 값은 ['1','2','3'] 또은 ['가위','바위','보'] 중 하나 이며, khk, syh 의 값중 하는 값이 있어야 하며 그 값을 기준으로 리턴 값을 결정|
-|---|---|---|khk => { 'user_choice': user_choice, 'computer_choice': computer_choice, 'result': result, 'game_results': game_results }|------|
-|---|---|---|syh => { 'computer': computer, 'result': reuslt, 'rank': rank_list }|------|
-|---|---|---|cmh => /game/cmh 페이지 이동|------|
+|/game/rps|POST|player_choice, kdm, khk, syh, cmh|kdm => /game/kdm 페이지 이동<br>khk => { 'user_choice': user_choice, 'computer_choice': computer_choice, 'result': result, 'game_results': game_results }<br>syh => { 'computer': computer, 'result': reuslt, 'rank': rank_list }<br>cmh => /game/cmh 페이지 이동|player_choice의 값은 ['1','2','3'] 또은 ['가위','바위','보'] 중 하나 이며, khk, syh 의 값중 하는 값이 있어야 하며 그 값을 기준으로 리턴 값을 결정|
