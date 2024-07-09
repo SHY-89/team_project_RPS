@@ -64,12 +64,13 @@
         {% endfor %}
         {% endif %}
         {% endwith %}
-        <form method="POST">
+        <form method="POST" action="{{ url_for('game_rps') }}">
+            <input type="hidden" name="cmh" value="ok"/>
             {{ form.hidden_tag() }}
             <div class="form-group">
-                {{ form.choice.label(class="form-control-label") }}
-                {{ form.choice(class="form-control") }}
-                {% for error in form.choice.errors %}
+                {{ form.player_choice.label(class="form-control-label") }}
+                {{ form.player_choice(class="form-control") }}
+                {% for error in form.player_choice.errors %}
                 <small class="form-text text-danger">{{ error }}</small>
                 {% endfor %}
             </div>
@@ -91,6 +92,11 @@
         <p>© 2024–2024 1조 퍼스트 코딩. · <a href="#">김한규</a> · <a href="#">김동민</a> · <a href="#">서영환</a> · <a
                 href="#">조민희</a></p>
     </footer>
+    <script>
+        function logout() {
+            location.href = "{{ url_for('logout') }}"
+        }
+    </script>
 </body>
 
 </html>

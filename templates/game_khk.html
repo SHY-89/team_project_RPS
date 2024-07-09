@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/game_khk.css') }}">
     <script>
         function play(choice) {
-            $.post('/submit', { user_input: choice }, function (data) {
+            $.post('{{ url_for("game_rps") }}', { 'player_choice': choice, 'khk': 'ok' }, function (data) {
                 document.getElementById('user-choice').innerText = data.user_choice;
                 document.getElementById('computer-choice').innerText = data.computer_choice;
                 document.getElementById('result').innerText = 'YOU ' + data.result;

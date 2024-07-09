@@ -47,7 +47,8 @@
     <main class="container">
         <div class="kdm_css">
             <div class="container">
-                <form method="POST">
+                <form method="POST" action="{{ url_for('game_rps') }}">
+                    <input type="hidden" name="kdm" value="ok"/>
                     <button class="game_button" type="submit" name="player_choice" value="가위"><img class="RPS_img"
                             src="../static/images/scissors.png" alt=""></button>
                     <button class="game_button" type="submit" name="player_choice" value="바위"><img class="RPS_img"
@@ -82,6 +83,11 @@
         <p>© 2024–2024 1조 퍼스트 코딩. · <a href="#">김한규</a> · <a href="#">김동민</a> · <a href="#">서영환</a> · <a
                 href="#">조민희</a></p>
     </footer>
+    <script>
+        function logout() {
+            location.href = "{{ url_for('logout') }}"
+        }
+    </script>
 </body>
 
 </html>

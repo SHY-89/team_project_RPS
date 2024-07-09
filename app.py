@@ -163,109 +163,21 @@ def user_create():
     return {'reuslt': result}
 
 
-@app.route('/game/winlose')
-def game_winlose():
-    if 'user_id' in session:
-        user = request.args.get("user_choise")
-        # RPS 부분 추가
-        rps = {'1': '가위', '2': '바위', '3': '보'}
-        computer = ['1', '2', '3']
-        choice = random.choice(computer)
-        reuslt = ""
-        if user == choice:
-            reuslt = "비겼 습니다."
-        elif (choice == '1' or choice == '3') and (user == '1' or user == '3'):
-            if int(choice) % 3 > int(user) % 3:
-                reuslt = "컴퓨터 승리!!"
-            else:
-                reuslt = "사용자 승리!!"
-        else:
-            if int(choice) > int(user):
-                reuslt = "컴퓨터 승리!!"
-            else:
-                reuslt = "사용자 승리!!"
-
-        suser_id = session['user_id']
-        gamelog = GameLog(
-            user_id=suser_id, player=rps[user], computer=rps[choice], result=reuslt)
-        db.session.add(gamelog)
-        db.session.commit()
-
-    return {'computer': rps[choice], 'result': reuslt, 'rank': rank_list()}
-
-
-@app.route('/submit', methods=['POST'])
-def submit():
-    choices = ['가위', '바위', '보']
-    user_input = int(request.form['user_input'])
-    user_choice = choices[user_input - 1]
-    computer_choice = random.choice(choices)
-
-    if user_choice == computer_choice:
-        result = '비겼 습니다.'
-    elif (user_choice == '가위' and computer_choice == '보') or \
-            (user_choice == '바위' and computer_choice == '가위') or \
-            (user_choice == '보' and computer_choice == '바위'):
-        result = '사용자 승리!!'
-    else:
-        result = '컴퓨터 승리!!'
-
-    # 결과 저장
-    suser_id = session['user_id']
-    gamelog = GameLog(
-        user_id=suser_id, player=user_choice, computer=computer_choice, result=result)
-
-    db.session.add(gamelog)
-    db.session.commit()
-
-    print(
-        f"User choice: {user_choice}, Computer choice: {computer_choice}, {result}")
-
-    game_results = GameLog.query.filter_by(
-        user_id=suser_id).order_by(GameLog.idx.desc()).limit(10).all()
-    game_results_dict = [{'user_choice': r.player, 'computer_choice': r.computer, 'result': r.result} for r
-                         in game_results]
-
-    return jsonify({
-        'user_choice': user_choice,
-        'computer_choice': computer_choice,
-        'result': result,
-        'game_results': game_results_dict
-    })
-
-
-@app.route('/game/kdm', methods=['GET', 'POST'])
+@app.route('/game/kdm')
 def game_kdm():
     return_url = ''
     data = []
     if 'user_id' in session:
         return_url = 'game_kdm.html'
         suser_id = session['user_id']
-        data = GameLog.query.filter_by(
-            user_id=suser_id).order_by(GameLog.idx.desc()).limit(10).all()
-
+        data = GameLog.query.filter_by(user_id=suser_id).order_by(GameLog.idx.desc()).limit(10).all()
     else:
         return_url = 'login.html'
-    game_win_lose = ''
-    player_choice = ''
-    computer_choice = ''
+    
     win_count = 0
     draw_count = 0
     lose_count = 0
-    if request.method == 'POST':
-        player_choice = request.form['player_choice']
-        computer_choice = random.choice(['가위', '바위', '보'])
-        if (player_choice == '가위' and computer_choice == '보') or (player_choice == '바위' and computer_choice == '가위') or (player_choice == '보' and computer_choice == '바위'):
-            game_win_lose = '사용자 승리!!'
-
-        elif player_choice == computer_choice:
-            game_win_lose = '비겼 습니다.'
-        else:
-            game_win_lose = '컴퓨터 승리!!'
-        new_game = GameLog(user_id=suser_id, player=player_choice,
-                           computer=computer_choice, result=game_win_lose)
-        db.session.add(new_game)
-        db.session.commit()
+        
     win_count = GameLog.query.filter_by(
         user_id=suser_id, result='사용자 승리!!').count()
     draw_count = GameLog.query.filter_by(
@@ -273,9 +185,9 @@ def game_kdm():
     lose_count = GameLog.query.filter_by(
         user_id=suser_id, result='컴퓨터 승리!!').count()
     context = {
-        "player_choice": player_choice,
-        "computer_choice": computer_choice,
-        "game_win_lose": game_win_lose,
+        "player_choice": '',
+        "computer_choice": '',
+        "game_win_lose": '',
         "win_count": win_count,
         "draw_count": draw_count,
         "lose_count": lose_count
@@ -285,41 +197,74 @@ def game_kdm():
 
 # 가위바위보
 class PlayForm(FlaskForm):
-    choice = SelectField('나의 패 선택하기', choices=['가위','바위','보'])
+    player_choice = SelectField('나의 패 선택하기', choices=['가위','바위','보'])
     submit = SubmitField('Play')
 
-@app.route('/game/cmh', methods=['GET', 'POST'])
+@app.route('/game/cmh')
 def game_cmh():
     if 'user_id' not in session:
         flash('우선 로그인하세요.', 'warning')
         return redirect(url_for('login'))
-    
     form = PlayForm()
-    if form.validate_on_submit():
-        user_choice = form.choice.data
+    return render_template('game_cmh.html', form=form)
+
+@app.route('/game/rps', methods=['POST'])
+def game_rps():
+    return_url = ''
+    if 'user_id' in session and request.method == 'POST':
+        player_choice = request.form['player_choice']
+        if player_choice in ['1','2','3']:
+            choices = ['가위', '바위', '보']
+            player_choice = choices[int(request.form['player_choice'])-1]
         computer_choice = random.choice(['가위', '바위', '보'])
 
-        # 가위바위보 규칙
-        if user_choice == computer_choice:
-            result = '비겼습니다'
-        elif (user_choice == '가위' and computer_choice == '보') or \
-             (user_choice == '바위' and computer_choice == '가위') or \
-             (user_choice == '보' and computer_choice == '바위'):
-            result = '이겼습니다'
+        if (player_choice == '가위' and computer_choice == '보') or (player_choice == '바위' and computer_choice == '가위') or (player_choice == '보' and computer_choice == '바위'):
+            game_win_lose = '사용자 승리!!'
+        elif player_choice == computer_choice:
+            game_win_lose = '비겼 습니다.'
         else:
-            result = '졌습니다'
-
-        # 결과 저장
-        suser_id = session['user_id']
-        new_record = GameLog(user_id=suser_id, player=user_choice,
-                           computer=computer_choice, result=result)
-        db.session.add(new_record)
+            game_win_lose = '컴퓨터 승리!!'
+        
+        new_game = GameLog(user_id=session['user_id'], player=player_choice, computer=computer_choice, result=game_win_lose)
+        db.session.add(new_game)
         db.session.commit()
-        print(form,{'user_choice':user_choice, 'computer_choice':computer_choice, 'result':result})
-        return render_template('game_cmh.html',form=form, result = {'user_choice':user_choice, 'computer_choice':computer_choice, 'result':result})
-
-
-    return render_template('game_cmh.html', form=form)
+        
+        if 'kdm' in request.form:
+            win_count = GameLog.query.filter_by(
+                user_id=session['user_id'], result='사용자 승리!!').count()
+            draw_count = GameLog.query.filter_by(
+                user_id=session['user_id'], result='비겼 습니다.').count()
+            lose_count = GameLog.query.filter_by(
+                user_id=session['user_id'], result='컴퓨터 승리!!').count()
+            context = {
+                "player_choice": player_choice,
+                "computer_choice": computer_choice,
+                "game_win_lose": game_win_lose,
+                "win_count": win_count,
+                "draw_count": draw_count,
+                "lose_count": lose_count
+            }
+            return_url = 'game_kdm.html'
+            return render_template(return_url, data=context)
+        elif 'khk' in request.form:
+            
+            game_results = GameLog.query.filter_by( user_id=session['user_id']).order_by(GameLog.idx.desc()).limit(10).all()
+            game_results_dict = [{'user_choice': r.player, 'computer_choice': r.computer, 'result': r.result} for r in game_results]
+            
+            return jsonify({
+                'user_choice': player_choice,
+                'computer_choice': computer_choice,
+                'result': game_win_lose,
+                'game_results': game_results_dict
+            })
+        elif 'cmh' in request.form:
+            form = PlayForm()
+            return_url = 'game_cmh.html'
+            return render_template(return_url, form=form, result= {'user_choice':player_choice, 'computer_choice':computer_choice, 'result':game_win_lose})
+        elif 'syh' in request.form:
+            return {'computer': computer_choice, 'result': game_win_lose, 'rank': rank_list()}
+        
+    return render_template(return_url, data=context)
 
 if __name__ == '__main__':
     app.run()
