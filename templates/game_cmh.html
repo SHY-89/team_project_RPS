@@ -8,7 +8,7 @@
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/game.css') }}">
     <style>
-        form{
+        form {
             width: 50%;
             margin: 0 auto;
             padding: 20px 0;
@@ -64,8 +64,9 @@
         {% endfor %}
         {% endif %}
         {% endwith %}
+
         <form method="POST" action="{{ url_for('game_rps') }}">
-            <input type="hidden" name="cmh" value="ok"/>
+            <input type="hidden" name="cmh" value="ok" />
             {{ form.hidden_tag() }}
             <div class="form-group">
                 {{ form.player_choice.label(class="form-control-label") }}
@@ -75,16 +76,46 @@
                 {% endfor %}
             </div>
             <button type="submit" class="btn btn-primary">패 제출하기</button>
+
         </form>
+
+
         {% if 'user_choice' in result %}
         <div class="container">
-            <h1>승부</h1>
+            <h2>승부</h2>
             <p>사용자: {{ result.user_choice }}</p>
             <p>컴퓨터: {{ result.computer_choice }}</p>
             <p>승부: {{ result.result }}</p>
-            <p><a href="{{ url_for('game_cmh') }}" class="btn btn-primary">다시 하기</a></p>
+            <p><a href="{{ url_for('game_cmh') }}" class="btn btn-primary">전적 보기</a></p>
         </div>
         {% endif %}
+
+
+        {% if history %}
+        <h2>최근 10회 기록</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>날짜</th>
+                    <th>사용자</th>
+                    <th>컴퓨터</th>
+                    <th>승부</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for game in history %}
+                <tr>
+                    <td>{{ game.w_date.strftime('%m-%d %H:%M:%S') }}</td>
+                    <td>{{ game.player }}</td>
+                    <td>{{ game.computer }}</td>
+                    <td>{{ game.result }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+
     </main>
     <footer class="container">
         <hr>
