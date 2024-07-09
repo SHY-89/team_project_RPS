@@ -135,9 +135,9 @@
                     /* Read more about isConfirmed, isDenied below */
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: `{{ url_for('game_winlose') }}`,
-                            method: 'GET',
-                            data: { 'user_choise': choise },
+                            url: `{{ url_for('game_rps') }}`,
+                            method: 'POST',
+                            data: { 'player_choice': choise, 'syh': 'ok' },
                             dataType: 'json',
                             success: function (data) {
                                 gameinfo.unshift({ 'player': print_choise, 'computer': data.computer, 'result': data.result })
@@ -198,7 +198,7 @@
                 if (i === currentPage) {
                     inner_item = `<li class="page-item active" aria-current="page"><span class="page-link">` + i + `</span></li>`
                 } else {
-                    inner_item = `<li class="page-item"><a class="page-link" href="#">` + i + `</a></li>`
+                    inner_item = `<li class="page-item"><a class="page-link" onclick="displayTable('`+i+`')">` + i + `</a></li>`
                 }
                 paginationContainer.append(inner_item)
             }

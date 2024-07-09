@@ -47,7 +47,8 @@
     <main class="container">
         <div class="kdm_css">
             <div class="container">
-                <form method="POST">
+                <form method="POST" action="{{ url_for('game_rps') }}">
+                    <input type="hidden" name="kdm" value="ok"/>
                     <button class="game_button" type="submit" name="player_choice" value="가위"><img class="RPS_img"
                             src="../static/images/scissors.png" alt=""></button>
                     <button class="game_button" type="submit" name="player_choice" value="바위"><img class="RPS_img"
