@@ -197,39 +197,15 @@ def game_kdm():
 
 # 가위바위보
 class PlayForm(FlaskForm):
-    choice = SelectField('나의 패 선택하기', choices=['가위','바위','보'])
+    player_choice = SelectField('나의 패 선택하기', choices=['가위','바위','보'])
     submit = SubmitField('Play')
 
-@app.route('/game/cmh', methods=['GET', 'POST'])
+@app.route('/game/cmh')
 def game_cmh():
     if 'user_id' not in session:
         flash('우선 로그인하세요.', 'warning')
         return redirect(url_for('login'))
-    
     form = PlayForm()
-    if form.validate_on_submit():
-        user_choice = form.choice.data
-        computer_choice = random.choice(['가위', '바위', '보'])
-
-        # 가위바위보 규칙
-        if user_choice == computer_choice:
-            result = '비겼습니다'
-        elif (user_choice == '가위' and computer_choice == '보') or \
-             (user_choice == '바위' and computer_choice == '가위') or \
-             (user_choice == '보' and computer_choice == '바위'):
-            result = '이겼습니다'
-        else:
-            result = '졌습니다'
-
-        # 결과 저장
-        suser_id = session['user_id']
-        new_record = GameLog(user_id=suser_id, player=user_choice, computer=computer_choice, result=result)
-        db.session.add(new_record)
-        db.session.commit()
-        print(form,{'user_choice':user_choice, 'computer_choice':computer_choice, 'result':result})
-        return render_template('game_cmh.html',form=form, result = {'user_choice':user_choice, 'computer_choice':computer_choice, 'result':result})
-
-
     return render_template('game_cmh.html', form=form)
 
 @app.route('/game/rps', methods=['POST'])
@@ -269,6 +245,7 @@ def game_rps():
                 "lose_count": lose_count
             }
             return_url = 'game_kdm.html'
+            return render_template(return_url, data=context)
         elif 'khk' in request.form:
             
             game_results = GameLog.query.filter_by( user_id=session['user_id']).order_by(GameLog.idx.desc()).limit(10).all()
@@ -281,8 +258,9 @@ def game_rps():
                 'game_results': game_results_dict
             })
         elif 'cmh' in request.form:
-            return_url = 'game_kdm.html'
-            pass
+            form = PlayForm()
+            return_url = 'game_cmh.html'
+            return render_template(return_url, form=form, result= {'user_choice':player_choice, 'computer_choice':computer_choice, 'result':game_win_lose})
         elif 'syh' in request.form:
             return {'computer': computer_choice, 'result': game_win_lose, 'rank': rank_list()}
         
