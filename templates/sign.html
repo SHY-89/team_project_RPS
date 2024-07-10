@@ -113,7 +113,7 @@
                         success: function (data) {
                             if (data.reuslt == 'fail') {
                                 $('#inputUserid').addClass('is-invalid')
-                                $('#inputUserid').closest('div').children("div").text("ID가 중복 되었습니다.")
+                                $('#inputUserid').closest('div').children("div").text("ID가 잘 못 되었습니다.")
                             } else {
                                 signup(false)
                             }
@@ -127,9 +127,15 @@
                         dataType: 'json',
                         success: function (data) {
                             if (data.reuslt == 'fail') {
+                                let texts = ''
+                                if(data.error == 'id'){
+                                    texts = "ID가 잘 못 되었습니다."
+                                }else{
+                                    texts = "패스워드가 잘 못 되었습니다."
+                                }
                                 Swal.fire({
                                     icon: 'error',
-                                    title: "가입에 실패 하였습니다.",
+                                    title: "가입에 실패 하였습니다.<br>"+texts,
                                 })
                             } else {
                                 Swal.fire({
