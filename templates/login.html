@@ -31,6 +31,10 @@
     </nav>
     <main class="container">
         <form action="{{ url_for('login') }}" method="post">
+            {% if data %}
+                <div>로그인에 실패 하였습니다.</div>
+            {% endif %}
+            
             <div class="form-floating">
                 <input type="text" class="form-control" id="floatingInput" placeholder="userId" name="user_id">
                 <label for="floatingInput">Id</label>
