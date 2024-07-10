@@ -215,8 +215,13 @@ def game_cmh():
     if 'user_id' not in session:
         flash('우선 로그인하세요.', 'warning')
         return redirect(url_for('login'))
+
     form = PlayForm()
-    return render_template('game_cmh.html', form=form)
+
+    suser_id = session['user_id']
+    history = GameLog.query.filter_by(user_id=suser_id).order_by(GameLog.idx.desc()).limit(10).all()
+
+    return render_template('game_cmh.html', form=form, history=history)
 
 @app.route('/game/rps', methods=['POST'])
 def game_rps():
