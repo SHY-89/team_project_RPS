@@ -1,9 +1,8 @@
 
 from flask_sqlalchemy import SQLAlchemy  # type: ignore
-import os
+import os, random, hashlib, re
 from flask import Flask, render_template, url_for, request, session, redirect, jsonify, flash  # type: ignore
 from flask_cors import CORS  # type: ignore
-import random
 from datetime import datetime
 from flask_wtf import FlaskForm
 from wtforms import SelectField, SubmitField
@@ -111,16 +110,20 @@ def game_khk():
 
 @app.route('/login', methods=['POST'])
 def login():
+    error = None
     if 'user_id' in session:
         return redirect(url_for('game_syh'))
     elif request.method == 'POST':
+        m = hashlib.sha256()
+        m.update(request.form['user_pw'].encode('utf-8'))
         filter_list = Users.query.filter_by(
-            user_id=request.form['user_id'], user_pw=request.form['user_pw']).all()
+            user_id=request.form['user_id'], user_pw=m.hexdigest()).all()
         if filter_list:
             session['user_id'] = request.form['user_id']
             return redirect(url_for('game_syh'))
+        error = 'login_fail'
 
-    return render_template('login.html')
+    return render_template('login.html', data=error)
 
 
 @app.route('/logout')
@@ -151,16 +154,23 @@ def user_create():
     ruser_pw = params['user_pw']
     ruser_name = params['user_name']
     filter_list = Users.query.filter_by(user_id=ruser_id).all()
-
+    error = ''
     result = 'sussece'
-    if filter_list:
+    p = re.compile('^(?=.*[a-zA-Z])(?=.*[0-9]).{8,25}$')
+    if filter_list or len(ruser_id) < 4:
         result = 'fail'
+        error = 'id'
+    elif len(ruser_pw) < 8 or p.match(ruser_pw) == None:
+        result = 'fail'
+        error = 'pw'
     else:
-        user = Users(user_id=ruser_id, user_name=ruser_name, user_pw=ruser_pw)
+        m = hashlib.sha256()
+        m.update(ruser_pw.encode('utf-8'))
+        user = Users(user_id=ruser_id, user_name=ruser_name, user_pw=m.hexdigest())
         db.session.add(user)
         db.session.commit()
 
-    return {'reuslt': result}
+    return {'reuslt': result, 'error': error}
 
 
 @app.route('/game/kdm')
