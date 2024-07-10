@@ -101,7 +101,6 @@ def game_khk():
         suser_id = session['user_id']
         data = GameLog.query.filter_by(
             user_id=suser_id).order_by(GameLog.idx.desc()).limit(10).all()
-
     else:
         return_url = 'login.html'
 
@@ -202,7 +201,6 @@ def game_kdm():
         "draw_count": draw_count,
         "lose_count": lose_count
     }
-
     return render_template(return_url, data=context)
 
 # 가위바위보
@@ -244,6 +242,7 @@ def game_rps():
         db.session.add(new_game)
         db.session.commit()
         
+        
         if 'kdm' in request.form:
             win_count = GameLog.query.filter_by(
                 user_id=session['user_id'], result='사용자 승리!!').count()
@@ -260,6 +259,7 @@ def game_rps():
                 "lose_count": lose_count
             }
             return_url = 'game_kdm.html'
+            
             return render_template(return_url, data=context)
         elif 'khk' in request.form:
             
@@ -275,11 +275,13 @@ def game_rps():
         elif 'cmh' in request.form:
             form = PlayForm()
             return_url = 'game_cmh.html'
+            
             return render_template(return_url, form=form, result= {'user_choice':player_choice, 'computer_choice':computer_choice, 'result':game_win_lose})
         elif 'syh' in request.form:
             return {'computer': computer_choice, 'result': game_win_lose, 'rank': rank_list()}
-        
+     
     return render_template(return_url, data=context)
+
 
 if __name__ == '__main__':
     app.run()
